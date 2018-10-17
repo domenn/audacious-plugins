@@ -414,12 +414,12 @@ ENABLE_PLUGIN_WITH_TEST(mpris2,
     GENERAL)
 
 test_songchange () {
-    if test $HAVE_MSWINDOWS = yes ; then
-        have_songchange=yes
-    else
-        AC_CHECK_HEADERS(sys/wait.h, have_songchange=yes, have_songchange=no)
-    fi
-}
+     if test $HAVE_MSWINDOWS = yes ; then
+         have_songchange=yes
+     else
+         AC_CHECK_HEADERS(sys/wait.h, have_songchange=yes, have_songchange=no)
+     fi
+ }
 
 ENABLE_PLUGIN_WITH_TEST(songchange,
     song change plugin,
@@ -460,6 +460,20 @@ ENABLE_PLUGIN_WITH_DEP(hotkey,
     GENERAL,
     GDKX11,
     gdk-x11-2.0)
+
+
+test_winkey () {
+     if test $HAVE_MSWINDOWS = yes ; then
+         have_winkey=yes
+     else
+         have_winkey=no
+     fi
+ }
+
+ENABLE_PLUGIN_WITH_TEST(winkey,
+    Windows hotkeys plugin,
+    auto,
+    GENERAL)
 
 ENABLE_PLUGIN_WITH_DEP(aosd,
     X11 OSD,
@@ -781,6 +795,7 @@ echo "  Linux Infrared Remote Control (LIRC):   $have_lirc"
 echo "  MPRIS 2 Server:                         $have_mpris2"
 echo "  Scrobbler 2.0:                          $have_scrobbler2"
 echo "  Song Change:                            $have_songchange"
+echo "  Windows hotkeys:                        $have_winkey"
 echo
 
 if test "x$USE_GTK" = "xyes" ; then
