@@ -2,6 +2,10 @@
 #define _PLUGIN_H_INCLUDED_
 
 #include <QtCore/QList>
+#include <QtCore>
+#include <functional>
+
+class QHotkey;
 
 namespace GlobalHotkeys
 {
@@ -39,19 +43,26 @@ enum class Event
 
 struct HotkeyConfiguration
 {
-    unsigned key, mask;
+    QHotkey * q_hotkey;
     Event event;
-};
 
-struct PluginConfig
-{
-    /* keyboard */
-    QList<HotkeyConfiguration> hotkeys_list;
+    HotkeyConfiguration(QHotkey * qHotkey, Event event);
+
+    static void clear_configured_hotkeys();
+
+    static const QList<HotkeyConfiguration> & get_configured_hotkeys()
+    {
+        return hotkeys_list;
+    }
+
+    static void replace(std::function<void(QList<HotkeyConfiguration> &)> p_function);
+private:
+    static QList<HotkeyConfiguration> hotkeys_list;
 };
 
 void load_config();
 void save_config();
-PluginConfig * get_config();
+
 bool handle_keyevent(Event event);
 
 void grab_keys();

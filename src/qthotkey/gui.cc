@@ -38,21 +38,20 @@
 #include "gui.h"
 #include "plugin.h"
 
+#include "qhotkey.h"
+#include <QSignalMapper>
 #include <QtCore/QMap>
 #include <QtCore/QStringList>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QMouseEvent>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QStyle>
-#include <QtX11Extras/QX11Info>
 
 #include <libaudcore/i18n.h>
 #include <libaudcore/preferences.h>
+#include <libaudcore/runtime.h>
 #include <libaudcore/templates.h>
-
 #include <libaudqt/libaudqt.h>
-
-#include <X11/XKBlib.h>
 
 namespace GlobalHotkeys
 {
@@ -79,78 +78,10 @@ static const QMap<Event, const char *> event_desc = {
     {Event::Raise, N_("Raise player window(s)")},
 };
 
-class LineKeyEdit : public QLineEdit
-{
-public:
-    explicit LineKeyEdit(QWidget * parent, HotkeyConfiguration & hotkey)
-        : QLineEdit(parent), m_hotkey(hotkey)
-    {
-        set_keytext(0, 0);
-    }
-
-    void set_keytext(int key, int mask)
-    {
-        QString text;
-
-        if ((key == 0) && (mask == 0))
-        {
-            text = audqt::translate_str("(none)");
-        }
-        else
-        {
-            static const char * modifier_string[] = {
-                "Control", "Shift", "Alt", "Mod2", "Mod3", "Super", "Mod5"};
-            static const unsigned int modifiers[] = {
-                ControlMask, ShiftMask, Mod1Mask, Mod2Mask,
-                Mod3Mask,    Mod4Mask,  Mod5Mask};
-
-            QStringList strings;
-
-            KeySym keysym;
-            keysym = XkbKeycodeToKeysym(QX11Info::display(), key, 0, 0);
-            if (keysym == 0 || keysym == NoSymbol)
-            {
-                text = QString::fromLocal8Bit("#%1").arg(key);
-            }
-            else
-            {
-                text = QString::fromLocal8Bit(XKeysymToString(keysym));
-            }
-
-            for (int j = 0; j < aud::n_elems(modifiers); ++j)
-            {
-                if (mask & modifiers[j])
-                {
-                    strings.push_back(QString::fromLatin1(modifier_string[j]));
-                }
-            }
-
-            if (key != 0)
-            {
-                strings.push_back(text);
-            }
-
-            text = strings.join(QLatin1String(" + "));
-        }
-
-        setText(text);
-
-        m_hotkey.key = key;
-        m_hotkey.mask = mask;
-    }
-
-protected:
-    void keyPressEvent(QKeyEvent * event) override
-    {
-        set_keytext(event->nativeScanCode(), event->nativeModifiers());
-    }
-
-private:
-    HotkeyConfiguration & m_hotkey;
-};
-
 KeyControls::~KeyControls()
 {
+    AUDDBG("KeyControls %s falling", keytext->keySequence().toString().toStdString().c_str());
+
     delete combobox;
     delete keytext;
     delete button;
@@ -173,6 +104,11 @@ PrefWidget::PrefWidget(QWidget * parent)
                                  audqt::translate_str("_Add"), this)),
       add_button_layout(new QHBoxLayout)
 {
+  main_widget_layout->setObjectName("Main widget vbox layout");
+    connect(main_widget_layout, &QVBoxLayout::destroyed, [](QObject* who){
+      auto* different = dynamic_cast<QVBoxLayout*>(who);
+          AUDDBG("Grid is falling. %d children. Type %s and name %s;; Casted: %d", who->children().size(), who->metaObject()->className(), who->objectName().toStdString().c_str(), different != nullptr);
+    });
     int icon_size =
         QApplication::style()->pixelMetric(QStyle::PM_MessageBoxIconSize);
     information_pixmap->setPixmap(
@@ -191,7 +127,7 @@ PrefWidget::PrefWidget(QWidget * parent)
     group_box_layout->addWidget(action_label, 0, 0);
     group_box_layout->addWidget(key_binding_label, 0, 1);
 
-    for (const auto & hotkey : get_config()->hotkeys_list)
+    for (const auto & hotkey : HotkeyConfiguration::get_configured_hotkeys())
     {
         add_event_control(&hotkey);
     }
@@ -207,7 +143,6 @@ PrefWidget::PrefWidget(QWidget * parent)
 
     QObject::connect(add_button, &QPushButton::clicked,
                      [this]() { add_event_control(nullptr); });
-
     last_instance = this;
 }
 
@@ -231,44 +166,25 @@ PrefWidget::~PrefWidget()
 void PrefWidget::add_event_control(const HotkeyConfiguration * hotkey)
 {
     KeyControls * control = new KeyControls;
-
-    if (hotkey != nullptr)
-    {
-        control->hotkey.key = hotkey->key;
-        control->hotkey.mask = hotkey->mask;
-        control->hotkey.event = hotkey->event;
-
-        if (control->hotkey.key == 0)
-        {
-            control->hotkey.mask = 0;
-        }
-    }
-    else
-    {
-        control->hotkey.key = 0;
-        control->hotkey.mask = 0;
-        control->hotkey.event = static_cast<Event>(0);
-    }
-
     control->combobox = new QComboBox(group_box);
 
     for (const auto & desc_item : event_desc)
     {
         control->combobox->addItem(audqt::translate_str(desc_item));
     }
-
+    //
     if (hotkey != nullptr)
     {
         control->combobox->setCurrentIndex(static_cast<int>(hotkey->event));
+        control->keytext =
+            new QKeySequenceEdit(hotkey->q_hotkey->shortcut(), group_box);
     }
-
-    control->keytext = new LineKeyEdit(group_box, control->hotkey);
-    control->keytext->setFocus(Qt::OtherFocusReason);
-
-    if (hotkey != nullptr)
+    else
     {
-        control->keytext->set_keytext(hotkey->key, hotkey->mask);
+        control->keytext = new QKeySequenceEdit(group_box);
     }
+
+    control->keytext->setFocus(Qt::OtherFocusReason);
 
     control->button = new QToolButton(group_box);
     control->button->setIcon(audqt::get_icon("edit-delete"));
@@ -287,24 +203,6 @@ void PrefWidget::add_event_control(const HotkeyConfiguration * hotkey)
     });
 }
 
-QList<HotkeyConfiguration> PrefWidget::getConfig() const
-{
-    QList<HotkeyConfiguration> result;
-
-    for (const auto & control : controls_list)
-    {
-        HotkeyConfiguration hotkey;
-
-        hotkey.key = control->hotkey.key;
-        hotkey.mask = control->hotkey.mask;
-        hotkey.event = static_cast<Event>(control->combobox->currentIndex());
-
-        result.push_back(hotkey);
-    }
-
-    return result;
-}
-
 void * PrefWidget::make_config_widget()
 {
     ungrab_keys();
@@ -318,8 +216,21 @@ void PrefWidget::ok_callback()
 {
     if (last_instance != nullptr)
     {
-        PluginConfig * plugin_cfg = get_config();
-        plugin_cfg->hotkeys_list = last_instance->getConfig();
+        HotkeyConfiguration::replace(
+            [](QList<HotkeyConfiguration> & insert_here) {
+                std::transform(
+                    std::begin(last_instance->controls_list),
+                    std::end(last_instance->controls_list),
+                    std::back_inserter(insert_here), [](KeyControls * control) {
+                        const auto & ptr_key = control->keytext->keySequence();
+                        auto ev = static_cast<Event>(
+                            control->combobox->currentIndex());
+                        AUDDBG("Transfer CFG from GUI to non-GUI for %s %s",
+                               ptr_key.toString().toStdString().data(),
+                               get_event_name(ev));
+                        return HotkeyConfiguration(new QHotkey(ptr_key), ev);
+                    });
+            });
         save_config();
     }
 }
@@ -334,4 +245,23 @@ const PluginPreferences hotkey_prefs = {{hotkey_widgets},
                                         PrefWidget::ok_callback,
                                         PrefWidget::destroy_callback};
 
+const char * get_event_name(Event the_event) { return event_desc[the_event]; }
 } /* namespace GlobalHotkeys */
+
+/*
+
+  ./configure --prefix=/C/aud  CPPFLAGS=-DDEBUG CXXFLAGS="-g -O0"  CFLAGS="-g
+  -O0" --enable-adplug=no --enable-cdaudio=no --enable-flac=yes
+  --enable-vorbis=yes --enable-amidiplug=no --enable-mpg123=yes --enable-aac=no
+  --enable-wavpack=no --enable-sndfile=yes --enable-modplug=no --enable-sid=no
+  --enable-console=no --enable-bs2b=no --enable-resample=no
+  --enable-speedpitch=no --enable-soxr=no --enable-alsa=no --enable-jack=no
+  --enable-oss4=no --enable-pulse=no --enable-sndio=no --enable-cue=no
+  --enable-neon=no --enable-mms=no --enable-notify=no --enable-notify=no
+  --enable-lirc=no --enable-mpris2=no --enable-songchange=yes
+  --enable-scrobbler2=no --enable-glspectrum=no --enable-hotkey=no
+  --enable-aosd=no --enable-ampache=no --enable-qtaudio=yes --enable-notify=no
+  --enable-sdlout=no --enable-mac-media-keys=no
+
+
+ */

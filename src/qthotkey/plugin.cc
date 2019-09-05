@@ -38,11 +38,11 @@
 #include "plugin.h"
 #include "gui.h"
 
+#include "qhotkey.h"
 #include <QtCore/QAbstractNativeEventFilter>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QString>
 #include <QtCore/QTimer>
-#include <QtX11Extras/QX11Info>
 
 #include <libaudcore/drct.h>
 #include <libaudcore/hook.h>
@@ -53,17 +53,13 @@
 
 #include <libaudqt/libaudqt.h>
 
-#include <X11/XF86keysym.h>
-#include <X11/Xlib.h>
-#include <X11/keysym.h>
-#include <xcb/xproto.h>
-
-#include <stdlib.h>
+#include <caca++.h>
+#include <iostream>
 
 namespace GlobalHotkeys
 {
 
-class GlobalHotkeys : public GeneralPlugin, public QAbstractNativeEventFilter
+class GlobalHotkeys : public GeneralPlugin
 {
 public:
     static const char about[];
@@ -75,19 +71,12 @@ public:
 
     bool init() override;
     void cleanup() override;
-
-private:
-    bool nativeEventFilter(const QByteArray & eventType, void * message,
-                           long * result) override;
 };
 
-/* global vars */
-static PluginConfig plugin_cfg;
+constexpr PluginInfo GlobalHotkeys::info;
 
-static int grabbed = 0;
-static unsigned int numlock_mask = 0;
-static unsigned int scrolllock_mask = 0;
-static unsigned int capslock_mask = 0;
+/* global vars */
+QList<HotkeyConfiguration> HotkeyConfiguration::hotkeys_list{};
 
 const char GlobalHotkeys::about[] =
     N_("Global Hotkey Plugin\n"
@@ -102,15 +91,13 @@ const char GlobalHotkeys::about[] =
        " Jonathan A. Davis <davis@jdhouse.org>,\n"
        " Jeremy Tan <nsx@nsx.homeip.net>");
 
-PluginConfig * get_config() { return &plugin_cfg; }
-
 /* handle keys */
 bool handle_keyevent(Event event)
 {
     int current_volume, old_volume;
     static int volume_static = 0;
     bool mute;
-
+    AUDINFO("Handling the %s", get_event_name(event));
     /* get current volume */
     current_volume = aud_drct_get_volume_main();
     old_volume = current_volume;
@@ -315,76 +302,78 @@ bool handle_keyevent(Event event)
     return false;
 }
 
-void add_hotkey(QList<HotkeyConfiguration> & hotkeys_list, KeySym keysym,
-                int mask, Event event)
-{
-    KeyCode keycode;
-    HotkeyConfiguration hotkey;
-
-    if (keysym == 0)
-    {
-        return;
-    }
-
-    keycode = XKeysymToKeycode(QX11Info::display(), keysym);
-    if (keycode == 0)
-    {
-        return;
-    }
-
-    hotkey.key = static_cast<int>(keycode);
-    hotkey.mask = mask;
-    hotkey.event = event;
-
-    hotkeys_list.push_back(hotkey);
-}
-
 void load_defaults()
 {
-    add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioPrev, 0, Event::PrevTrack);
-    add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioPlay, 0, Event::Play);
-    add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioPause, 0, Event::Pause);
-    add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioStop, 0, Event::Stop);
-    add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioNext, 0, Event::NextTrack);
-    add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioMute, 0, Event::Mute);
-    add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioRaiseVolume, 0,
-               Event::VolumeUp);
-    add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioLowerVolume, 0,
-               Event::VolumeDown);
+    //    add_hotkey(plugin_cfg.hotkeys_list, Qt::Key_P,
+    //               Qt::KeyboardModifier::AltModifier |
+    //                   Qt::KeyboardModifier::ShiftModifier,
+    //               Event::PrevTrack);
+    //	add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioPlay, 0, Event::Play);
+    //	add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioPause, 0, Event::Pause);
+    //	add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioStop, 0, Event::Stop);
+    //	add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioNext, 0,
+    // Event::NextTrack); 	add_hotkey(plugin_cfg.hotkeys_list,
+    // XF86XK_AudioMute, 0, Event::Mute);
+    // add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioRaiseVolume, 0,
+    // Event::VolumeUp); 	add_hotkey(plugin_cfg.hotkeys_list,
+    // XF86XK_AudioLowerVolume, 0, Event::VolumeDown);
 }
 
 /* load plugin configuration */
 void load_config()
 {
     int max = aud_get_int("globalHotkey", "NumHotkeys");
+    HotkeyConfiguration::clear_configured_hotkeys();
     if (max == 0)
     {
         load_defaults();
     }
     else
     {
-        for (int i = 0; i < max; ++i)
-        {
-            HotkeyConfiguration hotkey;
+        HotkeyConfiguration::replace([&max](QList<HotkeyConfiguration> & list) {
+            for (int i = 0; i < max; ++i)
+            {
+                const auto key = aud_get_int(
+                    "globalHotkey", QString::fromLatin1("Hotkey_%1_key")
+                                        .arg(i)
+                                        .toLocal8Bit()
+                                        .data());
 
-            hotkey.key =
-                aud_get_int("globalHotkey", QString::fromLatin1("Hotkey_%1_key")
-                                                .arg(i)
-                                                .toLocal8Bit()
-                                                .data());
-            hotkey.mask = aud_get_int("globalHotkey",
-                                      QString::fromLatin1("Hotkey_%1_mask")
-                                          .arg(i)
-                                          .toLocal8Bit()
-                                          .data());
-            hotkey.event = static_cast<Event>(aud_get_int(
-                "globalHotkey", QString::fromLatin1("Hotkey_%1_event")
-                                    .arg(i)
-                                    .toLocal8Bit()
-                                    .data()));
+                const auto mask = aud_get_int(
+                    "globalHotkey", QString::fromLatin1("Hotkey_%1_mask")
+                                        .arg(i)
+                                        .toLocal8Bit()
+                                        .data());
 
-            plugin_cfg.hotkeys_list.push_back(hotkey);
-        }
+                const auto the_event = static_cast<Event>(aud_get_int(
+                    "globalHotkey", QString::fromLatin1("Hotkey_%1_event")
+                                        .arg(i)
+                                        .toLocal8Bit()
+                                        .data()));
+
+                auto * hotkey = new QHotkey(
+                    static_cast<Qt::Key>(key),
+                    static_cast<Qt::KeyboardModifier>(mask), false, nullptr);
+
+                AUDDBG("Appending %d %d event %s; That is %s", key, mask,
+                       get_event_name(the_event),
+                       hotkey->shortcut().toString().toStdString().c_str());
+
+//                QObject::connect(hotkey, &QHotkey::destroyed,
+//                                 [](QObject * key) {
+//                                     auto * inst = dynamic_cast<QHotkey *>(key);
+//                                     key->dumpObjectInfo();
+//                                     AUDDBG("destroying %s %s", key->objectName().toStdString().c_str() ,
+//                                            inst != nullptr ? inst->shortcut()
+//                                                                  .toString()
+//                                                                  .toStdString()
+//                                                                  .c_str()
+//                                                            : "NONE");
+//                                 });
+
+                list.append(HotkeyConfiguration(hotkey, the_event));
+            }
+        });
     }
 }
 
@@ -393,22 +382,25 @@ void save_config()
 {
     int max = 0;
 
-    for (const auto & hotkey : plugin_cfg.hotkeys_list)
+    for (const auto & hotkey : HotkeyConfiguration::get_configured_hotkeys())
     {
-        if (hotkey.key != 0)
+        AUDDBG("Storing %s %s",
+               hotkey.q_hotkey->shortcut().toString().toStdString().data(),
+               get_event_name(hotkey.event));
+        if (hotkey.q_hotkey != nullptr)
         {
             aud_set_int("globalHotkey",
                         QString::fromLatin1("Hotkey_%1_key")
                             .arg(max)
                             .toLocal8Bit()
                             .data(),
-                        hotkey.key);
+                        hotkey.q_hotkey->keyCode());
             aud_set_int("globalHotkey",
                         QString::fromLatin1("Hotkey_%1_mask")
                             .arg(max)
                             .toLocal8Bit()
                             .data(),
-                        hotkey.mask);
+                        hotkey.q_hotkey->modifiers());
             aud_set_int("globalHotkey",
                         QString::fromLatin1("Hotkey_%1_event")
                             .arg(max)
@@ -422,305 +414,84 @@ void save_config()
     aud_set_int("globalHotkey", "NumHotkeys", max);
 }
 
+std::vector<QMetaObject::Connection> connections;
+
+void grab_keys()
+{
+    std::for_each(HotkeyConfiguration::get_configured_hotkeys().begin(),
+                  HotkeyConfiguration::get_configured_hotkeys().end(),
+                  [](const HotkeyConfiguration & hk) {
+                      connections.emplace_back(
+                          QObject::connect(hk.q_hotkey, &QHotkey::activated,
+                                           [capture_event{hk.event}]() {
+                                               handle_keyevent(capture_event);
+                                           }));
+                      AUDINFO("Registering %s and %s to %s",
+                              QKeySequence(hk.q_hotkey->keyCode())
+                                  .toString()
+                                  .toStdString()
+                                  .c_str(),
+                              QKeySequence(hk.q_hotkey->modifiers())
+                                  .toString()
+                                  .toStdString()
+                                  .c_str(),
+                              get_event_name(hk.event));
+                      hk.q_hotkey->setRegistered(true);
+                  });
+}
+void ungrab_keys()
+{
+    for (auto & c : connections)
+    {
+        QObject::disconnect(c);
+    }
+    connections.clear();
+
+    std::for_each(HotkeyConfiguration::get_configured_hotkeys().begin(),
+                  HotkeyConfiguration::get_configured_hotkeys().end(),
+                  [](const HotkeyConfiguration & hk) {
+                      hk.q_hotkey->setRegistered(false);
+                  });
+}
+
 GlobalHotkeys::GlobalHotkeys() : GeneralPlugin(info, false) {}
 
 bool GlobalHotkeys::init()
 {
+    // audlog::subscribe(&DCustomLogger::go, audlog::Level::Debug);
     audqt::init();
-
-    if (!QX11Info::isPlatformX11())
-    {
-        AUDERR("Global Hotkey plugin only supports X11.\n");
-        audqt::cleanup();
-        return false;
-    }
 
     load_config();
     grab_keys();
-    QCoreApplication::instance()->installNativeEventFilter(this);
 
     return true;
 }
 
 void GlobalHotkeys::cleanup()
 {
-    QCoreApplication::instance()->removeNativeEventFilter(this);
     ungrab_keys();
-    plugin_cfg.hotkeys_list.clear();
+    HotkeyConfiguration::clear_configured_hotkeys();
+    // audlog::unsubscribe(&DCustomLogger::go);
 
     audqt::cleanup();
 }
 
-bool GlobalHotkeys::nativeEventFilter(const QByteArray & eventType,
-                                      void * message, long * result)
+HotkeyConfiguration::HotkeyConfiguration(QHotkey * qHotkey, Event event)
+    : q_hotkey(qHotkey), event(event)
 {
-    Q_UNUSED(eventType);
-    Q_UNUSED(result);
-
-    if (!grabbed)
-    {
-        return false;
-    }
-
-    xcb_generic_event_t * e = static_cast<xcb_generic_event_t *>(message);
-
-    if (e->response_type != XCB_KEY_PRESS)
-    {
-        return false;
-    }
-
-    xcb_key_press_event_t * ke = (xcb_key_press_event_t *)e;
-
-    for (const auto & hotkey : plugin_cfg.hotkeys_list)
-    {
-        if ((hotkey.key == ke->detail) &&
-            (hotkey.mask ==
-             (ke->state & ~(scrolllock_mask | numlock_mask | capslock_mask))))
-        {
-            if (handle_keyevent(hotkey.event))
-            {
-                return true;
-            }
-        }
-    }
-
-    return false;
 }
-
-/* Taken from xbindkeys */
-static void get_offending_modifiers(Display * dpy)
+void HotkeyConfiguration::clear_configured_hotkeys()
 {
-    XModifierKeymap * modmap;
-    KeyCode nlock, slock;
-
-    static int mask_table[8] = {ShiftMask, LockMask, ControlMask, Mod1Mask,
-                                Mod2Mask,  Mod3Mask, Mod4Mask,    Mod5Mask};
-
-    nlock = XKeysymToKeycode(dpy, XK_Num_Lock);
-    slock = XKeysymToKeycode(dpy, XK_Scroll_Lock);
-
-    /*
-     * Find out the masks for the NumLock and ScrollLock modifiers,
-     * so that we can bind the grabs for when they are enabled too.
-     */
-    modmap = XGetModifierMapping(dpy);
-
-    if ((modmap != nullptr) && (modmap->max_keypermod > 0))
-    {
-        for (int i = 0; i < 8 * modmap->max_keypermod; ++i)
-        {
-            if ((modmap->modifiermap[i] == nlock) && (nlock != 0))
-            {
-                numlock_mask = mask_table[i / modmap->max_keypermod];
-            }
-            else if ((modmap->modifiermap[i] == slock) && (slock != 0))
-            {
-                scrolllock_mask = mask_table[i / modmap->max_keypermod];
-            }
-        }
-    }
-
-    capslock_mask = LockMask;
-
-    if (modmap)
-    {
-        XFreeModifiermap(modmap);
-    }
+    std::for_each(hotkeys_list.begin(), hotkeys_list.end(),
+                  [](HotkeyConfiguration & conf) { delete conf.q_hotkey; });
+    hotkeys_list.clear();
 }
-
-static int x11_error_handler(Display * dpy, XErrorEvent * error) { return 0; }
-
-/* grab required keys */
-static void grab_key(const HotkeyConfiguration & hotkey, Display * xdisplay,
-                     Window x_root_window)
+void HotkeyConfiguration::replace(
+    std::function<void(QList<HotkeyConfiguration> &)> p_function)
 {
-    unsigned int modifier =
-        hotkey.mask & ~(numlock_mask | capslock_mask | scrolllock_mask);
-
-    if (hotkey.key == 0)
-    {
-        return;
-    }
-
-    XGrabKey(xdisplay, hotkey.key, modifier, x_root_window, False,
-             GrabModeAsync, GrabModeAsync);
-
-    if (modifier == AnyModifier)
-    {
-        return;
-    }
-
-    if (numlock_mask)
-    {
-        XGrabKey(xdisplay, hotkey.key, modifier | numlock_mask, x_root_window,
-                 False, GrabModeAsync, GrabModeAsync);
-    }
-
-    if (capslock_mask)
-    {
-        XGrabKey(xdisplay, hotkey.key, modifier | capslock_mask, x_root_window,
-                 False, GrabModeAsync, GrabModeAsync);
-    }
-
-    if (scrolllock_mask)
-    {
-        XGrabKey(xdisplay, hotkey.key, modifier | scrolllock_mask,
-                 x_root_window, False, GrabModeAsync, GrabModeAsync);
-    }
-
-    if (numlock_mask && capslock_mask)
-    {
-        XGrabKey(xdisplay, hotkey.key, modifier | numlock_mask | capslock_mask,
-                 x_root_window, False, GrabModeAsync, GrabModeAsync);
-    }
-
-    if (numlock_mask && scrolllock_mask)
-    {
-        XGrabKey(xdisplay, hotkey.key,
-                 modifier | numlock_mask | scrolllock_mask, x_root_window,
-                 False, GrabModeAsync, GrabModeAsync);
-    }
-
-    if (capslock_mask && scrolllock_mask)
-    {
-        XGrabKey(xdisplay, hotkey.key,
-                 modifier | capslock_mask | scrolllock_mask, x_root_window,
-                 False, GrabModeAsync, GrabModeAsync);
-    }
-
-    if (numlock_mask && capslock_mask && scrolllock_mask)
-    {
-        XGrabKey(xdisplay, hotkey.key,
-                 modifier | numlock_mask | capslock_mask | scrolllock_mask,
-                 x_root_window, False, GrabModeAsync, GrabModeAsync);
-    }
+    clear_configured_hotkeys();
+    p_function(hotkeys_list);
 }
-
-void grab_keys()
-{
-    PluginConfig * plugin_cfg = get_config();
-
-    XErrorHandler old_handler = nullptr;
-    Display * xdisplay = QX11Info::display();
-
-    if (grabbed || (!xdisplay))
-    {
-        return;
-    }
-
-    XSync(xdisplay, False);
-    old_handler = XSetErrorHandler(x11_error_handler);
-
-    get_offending_modifiers(xdisplay);
-
-    for (const auto & hotkey : plugin_cfg->hotkeys_list)
-    {
-        for (int screen = 0; screen < ScreenCount(xdisplay); ++screen)
-        {
-            grab_key(hotkey, xdisplay, RootWindow(xdisplay, screen));
-        }
-    }
-
-    XSync(xdisplay, False);
-    XSetErrorHandler(old_handler);
-
-    grabbed = 1;
-}
-
-/* grab required keys */
-static void ungrab_key(const HotkeyConfiguration & hotkey, Display * xdisplay,
-                       Window x_root_window)
-{
-    unsigned int modifier =
-        hotkey.mask & ~(numlock_mask | capslock_mask | scrolllock_mask);
-
-    if (hotkey.key == 0)
-    {
-        return;
-    }
-
-    XUngrabKey(xdisplay, hotkey.key, modifier, x_root_window);
-
-    if (modifier == AnyModifier)
-    {
-        return;
-    }
-
-    if (numlock_mask)
-    {
-        XUngrabKey(xdisplay, hotkey.key, modifier | numlock_mask,
-                   x_root_window);
-    }
-
-    if (capslock_mask)
-    {
-        XUngrabKey(xdisplay, hotkey.key, modifier | capslock_mask,
-                   x_root_window);
-    }
-
-    if (scrolllock_mask)
-    {
-        XUngrabKey(xdisplay, hotkey.key, modifier | scrolllock_mask,
-                   x_root_window);
-    }
-
-    if (numlock_mask && capslock_mask)
-    {
-        XUngrabKey(xdisplay, hotkey.key,
-                   modifier | numlock_mask | capslock_mask, x_root_window);
-    }
-
-    if (numlock_mask && scrolllock_mask)
-    {
-        XUngrabKey(xdisplay, hotkey.key,
-                   modifier | numlock_mask | scrolllock_mask, x_root_window);
-    }
-
-    if (capslock_mask && scrolllock_mask)
-    {
-        XUngrabKey(xdisplay, hotkey.key,
-                   modifier | capslock_mask | scrolllock_mask, x_root_window);
-    }
-
-    if (numlock_mask && capslock_mask && scrolllock_mask)
-    {
-        XUngrabKey(xdisplay, hotkey.key,
-                   modifier | numlock_mask | capslock_mask | scrolllock_mask,
-                   x_root_window);
-    }
-}
-
-void ungrab_keys()
-{
-    PluginConfig * plugin_cfg = get_config();
-
-    XErrorHandler old_handler = nullptr;
-    Display * xdisplay = QX11Info::display();
-
-    if ((!grabbed) || (!xdisplay))
-    {
-        return;
-    }
-
-    XSync(xdisplay, False);
-    old_handler = XSetErrorHandler(x11_error_handler);
-
-    get_offending_modifiers(xdisplay);
-
-    for (const auto & hotkey : plugin_cfg->hotkeys_list)
-    {
-        for (int screen = 0; screen < ScreenCount(xdisplay); ++screen)
-        {
-            ungrab_key(hotkey, xdisplay, RootWindow(xdisplay, screen));
-        }
-    }
-
-    XSync(xdisplay, False);
-    XSetErrorHandler(old_handler);
-
-    grabbed = 0;
-}
-
 } /* namespace GlobalHotkeys */
 
 EXPORT GlobalHotkeys::GlobalHotkeys aud_plugin_instance;
