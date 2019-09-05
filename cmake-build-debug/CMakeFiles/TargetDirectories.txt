@@ -1,0 +1,3 @@
+C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/CMakeFiles/audaciousPlugins.dir
+C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,1788 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="AudaciousPlugins"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="audaciousPlugins">
+				<Option output="C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/libaudaciousPlugins.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/Users/Domen/Everything/audacious-plugins"/>
+					<Add directory="C:/Users/Domen/Everything/audacious-plugins/src"/>
+					<Add directory="C:/Users/Domen/Everything/audacious-plugins/src/dbus"/>
+					<Add directory="C:/GTK/include/gtk-2.0"/>
+					<Add directory="C:/GTK/lib/gtk-2.0/include"/>
+					<Add directory="C:/GTK/include/pango-1.0"/>
+					<Add directory="C:/GTK/include/cairo"/>
+					<Add directory="C:/GTK/include/atk-1.0"/>
+					<Add directory="C:/GTK/include/pixman-1"/>
+					<Add directory="C:/GTK/include/libpng16"/>
+					<Add directory="C:/GTK/include/gdk-pixbuf-2.0"/>
+					<Add directory="C:/GTK/include/glib-2.0"/>
+					<Add directory="C:/GTK/lib/glib-2.0/include"/>
+					<Add directory="C:/aud/include"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/x86_64-w64-mingw32"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/backward"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 audaciousPlugins"/>
+					<CompileFile command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="audaciousPlugins/fast">
+				<Option output="C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/libaudaciousPlugins.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/Users/Domen/Everything/audacious-plugins"/>
+					<Add directory="C:/Users/Domen/Everything/audacious-plugins/src"/>
+					<Add directory="C:/Users/Domen/Everything/audacious-plugins/src/dbus"/>
+					<Add directory="C:/GTK/include/gtk-2.0"/>
+					<Add directory="C:/GTK/lib/gtk-2.0/include"/>
+					<Add directory="C:/GTK/include/pango-1.0"/>
+					<Add directory="C:/GTK/include/cairo"/>
+					<Add directory="C:/GTK/include/atk-1.0"/>
+					<Add directory="C:/GTK/include/pixman-1"/>
+					<Add directory="C:/GTK/include/libpng16"/>
+					<Add directory="C:/GTK/include/gdk-pixbuf-2.0"/>
+					<Add directory="C:/GTK/include/glib-2.0"/>
+					<Add directory="C:/GTK/lib/glib-2.0/include"/>
+					<Add directory="C:/aud/include"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/x86_64-w64-mingw32"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/backward"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 audaciousPlugins/fast"/>
+					<CompileFile command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Domen/Everything/audacious-plugins/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aac/aac.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/adplug/adplug-xmms.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/adplug/adplug-xmms.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/alarm/alarm.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/alarm/alarm.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/alarm/callbacks.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/alarm/interface.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/alarm/interface.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/albumart-qt/albumart.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/albumart/albumart.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/alsa/alsa.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/alsa/alsa.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/alsa/config.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/amidiplug/amidi-plug.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/amidiplug/backend-fluidsynth/b-fluidsynth.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/amidiplug/i_backend.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/amidiplug/i_configure-fluidsynth.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/amidiplug/i_configure-fluidsynth.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/amidiplug/i_configure.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/amidiplug/i_configure.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/amidiplug/i_fileinfo.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/amidiplug/i_fileinfo.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/amidiplug/i_midi.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/amidiplug/i_midi.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/amidiplug/i_midievent.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ampache/ampache.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd_cfg.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd_cfg.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd_osd.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd_osd.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd_style.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd_style.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd_style_private.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd_trigger.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd_trigger.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd_trigger_private.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/aosd_ui.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/ghosd-internal.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/ghosd-main.c">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/ghosd.c">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/aosd/ghosd.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/asx/asx.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/asx3/asx3.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/audpl/audpl.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/blur_scope-qt/blur_scope.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/blur_scope/blur_scope.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/bs2b/plugin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/cairo-spectrum/cairo-spectrum.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/cd-menu-items/cd-menu-items.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/cdaudio/cdaudio-ng.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/compressor/compressor.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Audacious_Driver.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Ay_Apu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Ay_Apu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Ay_Cpu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Ay_Cpu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Ay_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Ay_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Blip_Buffer.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Blip_Buffer.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Classic_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Classic_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Data_Reader.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Data_Reader.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Dual_Resampler.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Dual_Resampler.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Effects_Buffer.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Effects_Buffer.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Fir_Resampler.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Fir_Resampler.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gb_Apu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gb_Apu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gb_Cpu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gb_Cpu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gb_Oscs.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gb_Oscs.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gbs_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gbs_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gme_File.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gme_File.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gym_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gym_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gzip_Reader.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Gzip_Reader.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Hes_Apu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Hes_Apu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Hes_Cpu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Hes_Cpu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Hes_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Hes_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Kss_Cpu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Kss_Cpu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Kss_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Kss_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Kss_Scc_Apu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Kss_Scc_Apu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/M3u_Playlist.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/M3u_Playlist.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Multi_Buffer.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Multi_Buffer.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Music_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Music_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nes_Apu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nes_Apu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nes_Cpu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nes_Cpu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nes_Fme7_Apu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nes_Fme7_Apu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nes_Namco_Apu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nes_Namco_Apu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nes_Oscs.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nes_Oscs.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nes_Vrc6_Apu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nes_Vrc6_Apu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nsf_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nsf_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nsfe_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Nsfe_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Sap_Apu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Sap_Apu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Sap_Cpu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Sap_Cpu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Sap_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Sap_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Sms_Apu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Sms_Apu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Sms_Oscs.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Snes_Spc.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Snes_Spc.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Spc_Cpu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Spc_Cpu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Spc_Dsp.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Spc_Dsp.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Spc_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Spc_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Spc_Filter.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Spc_Filter.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Track_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Track_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Vfs_File.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Vfs_File.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Vgm_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Vgm_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Vgm_Emu_Impl.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Vgm_Emu_Impl.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Ym2413_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Ym2413_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Ym2612_Emu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Ym2612_Emu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Zlib_Inflater.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/Zlib_Inflater.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/blargg_common.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/blargg_endian.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/blargg_source.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/configure.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/configure.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/gb_cpu_io.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/gme.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/gme.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/gme_type_list.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/gme_types.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/hes_cpu_io.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/nes_cpu_io.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/plugin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/plugin.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/console/sap_cpu_io.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/coreaudio/audiodevice.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/coreaudio/coreaudio.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/crossfade/crossfade.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/crystalizer/crystalizer.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/cue/cue.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/delete-files/delete-files.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/echo_plugin/echo.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ffaudio/ffaudio-core.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ffaudio/ffaudio-io.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ffaudio/ffaudio-stdinc.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/filewriter/convert.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/filewriter/convert.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/filewriter/filewriter.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/filewriter/filewriter.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/filewriter/flac.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/filewriter/mp3.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/filewriter/vorbis.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/filewriter/wav.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/flac/flacng.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/flac/metadata.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/flac/plugin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/flac/seekable_stream_callbacks.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/flac/tools.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gio/gio.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/glspectrum/gl-spectrum.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/columns.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/gtkui.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/layout.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/layout.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/menu-ops.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/menus.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/settings.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/ui_gtk.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/ui_infoarea.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/ui_infoarea.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/ui_playlist_notebook.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/ui_playlist_notebook.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/ui_playlist_widget.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/ui_playlist_widget.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/ui_statusbar.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/gtkui/ui_statusbar.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/hotkey/grab.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/hotkey/grab.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/hotkey/gui.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/hotkey/gui.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/hotkey/plugin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/hotkey/plugin.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/jack/jack-ng.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ladspa/effect.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ladspa/ladspa.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ladspa/loaded-list.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ladspa/plugin-list.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ladspa/plugin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ladspa/plugin.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/lirc/lirc.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/lyricwiki-qt/lyricwiki.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/lyricwiki/lyricwiki.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/m3u/m3u.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/mac-media-keys/SPInvocationGrabbing.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/mac-media-keys/SPMediaKeyTap.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/metronom/metronom.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/mixer/mixer.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/mms/mms.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/modplug/archive/arch_raw.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/modplug/archive/arch_raw.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/modplug/archive/archive.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/modplug/archive/archive.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/modplug/archive/open.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/modplug/archive/open.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/modplug/modplugbmp.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/modplug/modplugbmp.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/modplug/plugin_main.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/modplug/settings.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/mpg123/mpg123.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/mpris2/object-core.c">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/mpris2/object-core.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/mpris2/object-player.c">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/mpris2/object-player.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/mpris2/plugin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/neon/cert_verification.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/neon/cert_verification.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/neon/neon.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/notify/event.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/notify/event.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/notify/notify.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/notify/osd.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/notify/osd.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/openmpt/mpt.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/openmpt/mptwrap.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/openmpt/mptwrap.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/oss4/oss.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/oss4/oss.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/oss4/plugin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/oss4/utils.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/playlist-manager-qt/playlist-manager-qt.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/playlist-manager/playlist-manager.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/pls/pls.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/ao.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/corlett.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/corlett.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/cpuintrf.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/eng_psf.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/eng_psf2.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/eng_spx.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/osd_cpu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops/adsr.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops/adsr.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops/dma.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops/dma.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops/externals.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops/gauss_i.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops/registers.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops/registers.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops/reverb.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops/spu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops/spu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops/stdafx.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/adsr.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/adsr.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/dma.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/dma.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/externals.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/gauss_i.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/psemuxa.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/registers.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/registers.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/regs.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/reverb.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/reverb.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/spu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/spu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/stdafx.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/peops2/xa.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/plugin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/psx.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/psx.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/psf/psx_hw.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/pulse/pulse_audio.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qt-spectrum/qt-spectrum.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtaudio/qtaudio.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtglspectrum/gl-spectrum.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/dialogs-qt.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/info_bar.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/info_bar.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/main_window.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/main_window.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/menu-ops.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/menus.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/menus.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/playlist-qt.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/playlist-qt.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/playlist_header.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/playlist_header.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/playlist_model.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/playlist_model.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/playlist_tabs.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/playlist_tabs.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/qtui.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/search_bar.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/search_bar.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/settings.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/settings.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/status_bar.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/status_bar.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/time_slider.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/time_slider.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/tool_bar.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/qtui/tool_bar.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/resample/resample.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/scrobbler2/config_window.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/scrobbler2/scrobbler.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/scrobbler2/scrobbler.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/scrobbler2/scrobbler_communication.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/scrobbler2/scrobbler_xml_parsing.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/sdlout/sdlout.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/search-tool-qt/search-tool-qt.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/search-tool/search-tool.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/sid/xmms-sid.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/sid/xmms-sid.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/sid/xs_config.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/sid/xs_config.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/sid/xs_sidplay2.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/sid/xs_sidplay2.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/silence-removal/silence-removal.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/actions-mainwin.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/actions-playlist.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/actions.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/button.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/button.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/dialogs-qt.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/dnd.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/dock.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/drag-handle.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/drag-handle.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/eq-graph.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/eq-graph.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/eq-slider.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/eq-slider.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/equalizer.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/equalizer.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/hslider.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/hslider.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/main.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/main.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/menu-ops.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/menurow.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/menurow.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/menus.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/menus.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/monostereo.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/monostereo.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/number.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/number.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/playlist-slider.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/playlist-slider.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/playlist-widget.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/playlist-widget.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/playlistwin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/playlistwin.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/playstatus.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/playstatus.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/plugin-window.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/plugin-window.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/plugin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/plugin.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/skin-ini.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/skin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/skin.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/skins_cfg.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/skins_cfg.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/skins_util.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/skins_util.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/skinselector.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/skinselector.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/svis.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/textbox.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/textbox.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/view.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/view.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/vis-callbacks.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/vis-callbacks.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/vis.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/vis.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/widget.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/widget.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/window.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins-qt/window.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/actions-mainwin.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/actions-playlist.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/actions.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/button.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/button.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/dnd.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/dock.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/drag-handle.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/drag-handle.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/eq-graph.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/eq-graph.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/eq-slider.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/eq-slider.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/equalizer.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/equalizer.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/hslider.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/hslider.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/main.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/main.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/menu-ops.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/menurow.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/menurow.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/menus.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/menus.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/monostereo.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/monostereo.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/number.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/number.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/playlist-slider.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/playlist-slider.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/playlist-widget.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/playlist-widget.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/playlistwin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/playlistwin.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/playstatus.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/playstatus.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/plugin-window.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/plugin-window.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/plugin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/plugin.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/search-select.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/skin-ini.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/skin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/skin.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/skins_cfg.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/skins_cfg.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/skins_util.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/skins_util.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/skinselector.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/skinselector.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/surface.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/surface.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/svis.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/textbox.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/textbox.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/view.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/view.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/vis-callbacks.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/vis-callbacks.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/vis.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/vis.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/widget.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/widget.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/window.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/skins/window.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/sndfile/plugin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/sndio/sndio.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/song-info-qt/song-info.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/songchange/formatter.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/songchange/formatter.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/songchange/song_change.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/songchange/songchange_crossplatform.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/soxr/sox-resampler.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/speedpitch/speed-pitch.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/statusicon-qt/statusicon.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/statusicon/statusicon.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/stereo_plugin/stereo.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/tonegen/tonegen.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ui-common/dialogs-qt.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ui-common/dialogs-qt.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ui-common/menu-ops-gtk.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ui-common/menu-ops-qt.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ui-common/menu-ops.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/ui-common/menu-ops.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/voice_removal/voice_removal.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vorbis/vcedit.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vorbis/vcedit.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vorbis/vcupdate.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vorbis/vorbis.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vorbis/vorbis.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vtx/ay8912.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vtx/ayemu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vtx/ayemu_8912.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vtx/ayemu_vtxfile.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vtx/info.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vtx/lh5dec.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vtx/vtx.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vtx/vtx.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/vtx/vtxfile.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/waveout/waveout.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/wavpack/wavpack.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/ao.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/corlett.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/corlett.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/ARM9.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/FIFO.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/FIFO.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/GPU.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/GPU.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/MMU.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/MMU.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/NDSSystem.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/NDSSystem.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/SPU.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/SPU.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/arm_instructions.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/arm_instructions.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/armcpu.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/armcpu.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/bios.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/bios.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/bits.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/config.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/cp15.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/cp15.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/debug.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/dscard.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/matrix.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/matrix.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/mc.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/mc.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/mem.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/registers.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/thumb_instructions.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/thumb_instructions.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/desmume/types.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/plugin.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/tagget.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/vio2sf.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/vio2sf.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xsf/xsfdrv.h">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/src/xspf/xspf.cc">
+			<Option target="audaciousPlugins"/>
+		</Unit>
+		<Unit filename="C:/Users/Domen/Everything/audacious-plugins/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
