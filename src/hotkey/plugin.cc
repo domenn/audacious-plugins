@@ -35,10 +35,12 @@
 
 #include <stdlib.h>
 
+#ifndef _WIN32
 #include <X11/XF86keysym.h>
+#include <gdk/gdkx.h>
+#endif
 
 #include <gdk/gdk.h>
-#include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
 #include <libaudcore/drct.h>
@@ -289,27 +291,53 @@ gboolean handle_keyevent (EVENT event)
     return false;
 }
 
+#ifdef _WIN32
+void add_hotkey(HotkeyConfiguration** pphotkey, int keysym, int mask, int type, EVENT event)
+{
+    int keycode;
+//    HotkeyConfiguration *photkey;
+//    if (keysym == 0) return;
+//    if (pphotkey == nullptr) return;
+//    photkey = *pphotkey;
+//    if (photkey == nullptr) return;
+//    keycode = keysym;
+//    if (keycode == 0) return;
+//    if (photkey->key) {
+//        photkey->next = g_new(HotkeyConfiguration, 1);
+//        photkey = photkey->next;
+//        *pphotkey = photkey;
+//        photkey->next = nullptr;
+//    }
+//    photkey->key = (int)keycode;
+//    photkey->mask = mask;
+//    photkey->event = event;
+//    photkey->type = type;
+}
+#else
 void add_hotkey(HotkeyConfiguration** pphotkey, KeySym keysym, int mask, int type, EVENT event)
 {
-    KeyCode keycode;
-    HotkeyConfiguration *photkey;
-    if (keysym == 0) return;
-    if (pphotkey == nullptr) return;
-    photkey = *pphotkey;
-    if (photkey == nullptr) return;
-    keycode = XKeysymToKeycode(GDK_DISPLAY_XDISPLAY(gdk_display_get_default()), keysym);
-    if (keycode == 0) return;
-    if (photkey->key) {
-        photkey->next = g_new(HotkeyConfiguration, 1);
-        photkey = photkey->next;
-        *pphotkey = photkey;
-        photkey->next = nullptr;
-    }
-    photkey->key = (int)keycode;
-    photkey->mask = mask;
-    photkey->event = event;
-    photkey->type = type;
+  KeyCode keycode;
+  HotkeyConfiguration *photkey;
+  if (keysym == 0) return;
+  if (pphotkey == nullptr) return;
+  photkey = *pphotkey;
+  if (photkey == nullptr) return;
+  keycode = XKeysymToKeycode(GDK_DISPLAY_XDISPLAY(gdk_display_get_default()), keysym);
+  if (keycode == 0) return;
+  if (photkey->key) {
+    photkey->next = g_new(HotkeyConfiguration, 1);
+    photkey = photkey->next;
+    *pphotkey = photkey;
+    photkey->next = nullptr;
+  }
+  photkey->key = (int)keycode;
+  photkey->mask = mask;
+  photkey->event = event;
+  photkey->type = type;
 }
+#endif
+
+
 
 void load_defaults ()
 {

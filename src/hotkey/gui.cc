@@ -39,14 +39,20 @@
 #include <libaudgui/libaudgui-gtk.h>
 
 #include <gtk/gtk.h>
+#ifndef _WIN32
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms-compat.h>
+#endif
 
+#ifndef _WIN32
 #include <X11/XKBlib.h>
+#endif
 
 #include "plugin.h"
 #include "gui.h"
+#ifndef _WIN32
 #include "grab.h"
+#endif
 
 typedef struct _KeyControls {
     GtkWidget *keytext;
