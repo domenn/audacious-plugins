@@ -33,12 +33,6 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include <stdlib.h>
-
-#include <X11/XF86keysym.h>
-
-#include <gdk/gdk.h>
-#include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
 #include <libaudcore/drct.h>
@@ -51,6 +45,7 @@
 #include "plugin.h"
 #include "gui.h"
 #include "grab.h"
+#include "api_hotkey.h"
 
 class GlobalHotkeys : public GeneralPlugin
 {
@@ -102,10 +97,16 @@ bool GlobalHotkeys::init ()
         AUDERR ("GTK+ initialization failed.\n");
         return false;
     }
-
+  // NOTE d: implement in WIN
+#ifndef _WIN32
     setup_filter();
+#endif
     load_config ( );
-    grab_keys ( );
+    // NOTE d: implement in WIN
+#ifndef _WIN32
+  grab_keys ();
+#endif
+
 
     return true;
 }
@@ -289,47 +290,25 @@ gboolean handle_keyevent (EVENT event)
     return false;
 }
 
-void add_hotkey(HotkeyConfiguration** pphotkey, KeySym keysym, int mask, int type, EVENT event)
-{
-    KeyCode keycode;
-    HotkeyConfiguration *photkey;
-    if (keysym == 0) return;
-    if (pphotkey == nullptr) return;
-    photkey = *pphotkey;
-    if (photkey == nullptr) return;
-    keycode = XKeysymToKeycode(GDK_DISPLAY_XDISPLAY(gdk_display_get_default()), keysym);
-    if (keycode == 0) return;
-    if (photkey->key) {
-        photkey->next = g_new(HotkeyConfiguration, 1);
-        photkey = photkey->next;
-        *pphotkey = photkey;
-        photkey->next = nullptr;
-    }
-    photkey->key = (int)keycode;
-    photkey->mask = mask;
-    photkey->event = event;
-    photkey->type = type;
-}
-
 void load_defaults ()
 {
     HotkeyConfiguration* hotkey;
 
     hotkey = &(plugin_cfg.first);
 
-    add_hotkey(&hotkey, XF86XK_AudioPrev, 0, TYPE_KEY, EVENT_PREV_TRACK);
-    add_hotkey(&hotkey, XF86XK_AudioPlay, 0, TYPE_KEY, EVENT_PLAY);
-    add_hotkey(&hotkey, XF86XK_AudioPause, 0, TYPE_KEY, EVENT_PAUSE);
-    add_hotkey(&hotkey, XF86XK_AudioStop, 0, TYPE_KEY, EVENT_STOP);
-    add_hotkey(&hotkey, XF86XK_AudioNext, 0, TYPE_KEY, EVENT_NEXT_TRACK);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioPrev, 0, TYPE_KEY, EVENT_PREV_TRACK);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioPlay, 0, TYPE_KEY, EVENT_PLAY);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioPause, 0, TYPE_KEY, EVENT_PAUSE);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioStop, 0, TYPE_KEY, EVENT_STOP);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioNext, 0, TYPE_KEY, EVENT_NEXT_TRACK);
 
-/*    add_hotkey(&hotkey, XF86XK_AudioRewind, 0, TYPE_KEY, EVENT_BACKWARD); */
+/*    add_hotkey(&hotkey, OS_KEY_AudioRewind, 0, TYPE_KEY, EVENT_BACKWARD); */
 
-    add_hotkey(&hotkey, XF86XK_AudioMute, 0, TYPE_KEY, EVENT_MUTE);
-    add_hotkey(&hotkey, XF86XK_AudioRaiseVolume, 0, TYPE_KEY, EVENT_VOL_UP);
-    add_hotkey(&hotkey, XF86XK_AudioLowerVolume, 0, TYPE_KEY, EVENT_VOL_DOWN);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioMute, 0, TYPE_KEY, EVENT_MUTE);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioRaiseVolume, 0, TYPE_KEY, EVENT_VOL_UP);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioLowerVolume, 0, TYPE_KEY, EVENT_VOL_DOWN);
 
-/*    add_hotkey(&hotkey, XF86XK_AudioMedia, 0, TYPE_KEY, EVENT_JUMP_TO_FILE);
+/*    add_hotkey(&hotkey, OS_KEY_AudioMedia, 0, TYPE_KEY, EVENT_JUMP_TO_FILE);
     add_hotkey(&hotkey, XF86XK_Music, 0, TYPE_KEY, EVENT_TOGGLE_WIN); */
 }
 
@@ -418,8 +397,11 @@ void save_config ()
 void GlobalHotkeys::cleanup ()
 {
     HotkeyConfiguration* hotkey;
-    ungrab_keys ();
-    release_filter();
+  // NOTE d: implement in WIN
+#ifndef _WIN32
+  ungrab_keys ();
+  release_filter();
+#endif
     hotkey = &(plugin_cfg.first);
     hotkey = hotkey->next;
     while (hotkey)
