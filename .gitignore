@@ -23,3 +23,10 @@ src/mpris2/object-player.h
 *.diff
 *.bundle
 *.moc
+
+cmake-build*
+.idea/*
+
+!.idea/runConfigurations/RunExternalAudaciousLinux.xml
+!.idea/runConfigurations/RunExternalAudacious.xml
+!.idea/runConfigurations/customTargets.xml

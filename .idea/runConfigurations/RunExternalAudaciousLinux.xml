@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="RunExternalAudaciousLinux" type="CLionExternalRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-VF" WORKING_DIR="file://$PROJECT_DIR$/../aud" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AudaciousPlugins" TARGET_NAME="AudaciousBuiltLinux" CONFIG_NAME="AudaciousBuiltLinux" RUN_PATH="$PROJECT_DIR$/../aud/bin/audacious">
+    <method v="2" />
+  </configuration>
+</component>
