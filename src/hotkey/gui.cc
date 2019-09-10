@@ -48,6 +48,8 @@
 #include "grab.h"
 #include "api_hotkey.h"
 
+#include <libaudcore/named_logger_macros.h>
+
 typedef struct _KeyControls {
     GtkWidget *keytext;
     GtkWidget *grid;
@@ -92,6 +94,7 @@ on_entry_key_press_event(GtkWidget * widget,
                          GdkEventKey * event,
                          void * user_data)
 {
+  L_HOTKEY_FLOW("Entry");
     KeyControls *controls = (KeyControls*) user_data;
 
     if (event->keyval == GDK_Tab) return false;
@@ -118,6 +121,7 @@ on_entry_key_press_event(GtkWidget * widget,
   }
 
   Hotkey::set_keytext(controls->keytext, is_mod ? 0 : event->hardware_keycode, mod, TYPE_KEY);
+  L_HOTKEY_FLOW("Leave");
     return true;
 }
 

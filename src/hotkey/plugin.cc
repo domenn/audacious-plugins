@@ -46,6 +46,7 @@
 #include "gui.h"
 #include "grab.h"
 #include "api_hotkey.h"
+#include <libaudcore/named_logger_macros.h>
 
 class GlobalHotkeys : public GeneralPlugin
 {
@@ -62,14 +63,18 @@ public:
 
     constexpr GlobalHotkeys () : GeneralPlugin (info, false) {}
 
-    bool init ();
-    void cleanup ();
+    bool init () override;
+    void cleanup () override;
 };
 
 EXPORT GlobalHotkeys aud_plugin_instance;
 
+#ifndef _WIN32
 /* global vars */
-static PluginConfig plugin_cfg;
+static
+#else
+PluginConfig plugin_cfg;
+#endif
 
 const char GlobalHotkeys::about[] =
  N_("Global Hotkey Plugin\n"
@@ -97,17 +102,12 @@ bool GlobalHotkeys::init ()
         AUDERR ("GTK+ initialization failed.\n");
         return false;
     }
-  // NOTE d: implement in WIN
-#ifndef _WIN32
+#ifdef _WIN32
+  win_init();
+#endif
     setup_filter();
-#endif
     load_config ( );
-    // NOTE d: implement in WIN
-#ifndef _WIN32
   grab_keys ();
-#endif
-
-
     return true;
 }
 
@@ -292,6 +292,7 @@ gboolean handle_keyevent (EVENT event)
 
 void load_defaults ()
 {
+  L_HOTKEY_FLOW("Entry, loading defaults.");
     HotkeyConfiguration* hotkey;
 
     hotkey = &(plugin_cfg.first);
@@ -397,11 +398,8 @@ void save_config ()
 void GlobalHotkeys::cleanup ()
 {
     HotkeyConfiguration* hotkey;
-  // NOTE d: implement in WIN
-#ifndef _WIN32
   ungrab_keys ();
   release_filter();
-#endif
     hotkey = &(plugin_cfg.first);
     hotkey = hotkey->next;
     while (hotkey)
