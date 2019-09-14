@@ -1,0 +1,5 @@
+#include "resource.h"
+
+IDI_ICON_PREV             ICON                    "prev.ico"
+IDI_ICON_PAUSE_AUD        ICON                    "pause.ico"
+IDI_ICON_NEXT             ICON                    "next.ico"

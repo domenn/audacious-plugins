@@ -15,13 +15,121 @@
 #include <cstring>
 #include <thread>
 #include <gdk/gdkwin32.h>
+#include <algorithm>
+#include <iomanip>
+#include <sstream>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 
 #include "windows_key_str_map.h"
+#include "src/hotkeyw32/res/resource.h"
+
+#include "w32_resources_icons.hpp"
 
 constexpr auto W_KEY_ID_PLAY = 18771;
 constexpr auto W_KEY_ID_PREV = 18772;
 constexpr auto W_KEY_ID_NEXT = 18773;
 constexpr auto W_FIRST_GLOBAL_KEY_ID = 18774;
+
+bool window_hidden{false};
+HWND h_main_window{nullptr};
+
+class Utf16CharArrConverter {
+  gchar *converted{nullptr};
+ public:
+  Utf16CharArrConverter(const wchar_t *const input_w_str) :
+      converted(reinterpret_cast<char *>(g_utf16_to_utf8(
+          reinterpret_cast<const gunichar2 *> (input_w_str),
+          -1, nullptr, nullptr, nullptr))) {
+  }
+  ~Utf16CharArrConverter() {
+    if (converted) {
+      g_free(converted);
+    }
+  };
+  operator std::string() {
+    return std::string(converted);
+  }
+};
+
+std::string format_windows_error(
+    const std::string &str_lpszFunction) {
+  wchar_t *errorText = nullptr;
+  auto e = GetLastError();
+  // https://stackoverflow.com/questions/455434/how-should-i-use-formatmessage-properly-in-c
+  FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,
+                 nullptr,
+                 e,
+                 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                 reinterpret_cast<LPWSTR>(&errorText),  // output
+                 0, // minimum size for output buffer
+                 NULL);   // arguments - see note
+
+  if (NULL != errorText) {
+    Utf16CharArrConverter cvt(errorText);
+    LocalFree(errorText);
+    errorText = NULL;
+    return str_lpszFunction + " exited with code " + std::to_string(e) + " : " + std::string(cvt);
+  }
+  return {};
+}
+
+struct MainWindowSearchFilterData {
+  gpointer window_;
+  void *function_ptr_;
+
+  MainWindowSearchFilterData(gpointer window, void *functionPtr) : window_(window), function_ptr_(functionPtr) {
+    //   L_HOTKEY_FLOW("Constructor of weird struct.");
+  }
+
+  MainWindowSearchFilterData(const MainWindowSearchFilterData &) = delete;
+  MainWindowSearchFilterData(MainWindowSearchFilterData &&) = delete;
+  MainWindowSearchFilterData &operator=(const MainWindowSearchFilterData &) = delete;
+  MainWindowSearchFilterData &operator=(MainWindowSearchFilterData &&) = delete;
+  ~MainWindowSearchFilterData() = default;
+
+};
+
+struct WindowsWindow {
+  HWND handle_{};
+  std::string class_name_{};
+  std::string win_header_{};
+
+  WindowsWindow() = default;
+  ~WindowsWindow() = default;
+  WindowsWindow(const WindowsWindow &right) = delete;
+  WindowsWindow &operator=(const WindowsWindow &right) = delete;
+  WindowsWindow &operator=(WindowsWindow &&right) = default;
+  WindowsWindow(WindowsWindow &&right) = default;
+
+  WindowsWindow(HWND handle, std::string className, std::string winHeader)
+      : handle_(handle), class_name_(std::move(className)), win_header_(std::move(winHeader)) {}
+
+  bool is_main_window() const {
+    return class_name_ == "gdkWindowToplevel"
+        && win_header_.find("udacious") != std::string::npos;
+  }
+
+  static WindowsWindow get_window_data(HWND pHwnd) {
+    wchar_t char_buf[311];
+    auto num_char = GetClassNameW(pHwnd, char_buf, _countof(char_buf));
+    if (!num_char) {
+      AUDDBG("WinApiError (code %ld): cannot get ClassName for %p.\n",
+             GetLastError(), pHwnd);
+      return {};
+    }
+    std::string w_class_name = Utf16CharArrConverter(char_buf);
+    num_char = GetWindowTextW(pHwnd, char_buf, _countof(char_buf));
+    if (!num_char) {
+      AUDINFO("WinApiError (code %ld) getting WindowHeader. No header for %p. Ignoring this window.\n",
+              GetLastError(), pHwnd);
+      char_buf[0] = 0;
+    }
+    return {pHwnd, std::move(w_class_name), char_buf[0] ?
+                                            Utf16CharArrConverter(char_buf) : std::string{"[NO_TITLE]"}};
+  }
+};
 
 template<typename T>
 std::string VirtualKeyCodeToStringMethod2(T virtualKey) {
@@ -64,10 +172,19 @@ void Hotkey::add_hotkey(HotkeyConfiguration **pphotkey, Hotkey::OS_KeySym keysym
 }
 
 void register_global_keys(HWND handle) {
+#ifndef NDEBUG
+  static char called{0};
+  assert(!called++ && "This function should only be called once!");
+#endif
+  L_HOTKEY_FLOW("Registering for handle: " + std::to_string(reinterpret_cast<unsigned long long >(handle)));
   auto *hotkey = &(plugin_cfg.first);
   auto _id = W_FIRST_GLOBAL_KEY_ID;
   while (hotkey) {
-    RegisterHotKey(handle, _id++, hotkey->mask, hotkey->key);
+    if (!RegisterHotKey(handle, _id++, hotkey->mask, hotkey->key)) {
+      AUDWARN(format_windows_error("RegisterHotKey").c_str());
+    } else {
+      AUDDBG("Registered a hotkey: %u", hotkey->key);
+    }
     hotkey = hotkey->next;
   }
 }
@@ -95,28 +212,28 @@ HRESULT AddThumbarButtons(HWND hwnd) {
     THUMBBUTTONFLAGS dwFlags;
     */
 
-
+  auto ics = load_icons();
   THUMBBUTTON btn[]{{
                         dwMask,
                         W_KEY_ID_PREV,
                         0,
-                        nullptr,
+                        ics[0],
                         L"Previous song",
                         THBF_ENABLED
                     },
                     {
                         dwMask,
                         W_KEY_ID_PLAY,
-                        0,
-                        nullptr,
+                        1,
+                        ics[1],
                         L"Play/pause",
                         THBF_ENABLED
                     },
                     {
                         dwMask,
                         W_KEY_ID_NEXT,
-                        0,
-                        nullptr,
+                        2,
+                        ics[2],
                         L"Next song",
                         THBF_ENABLED
                     }
@@ -128,7 +245,9 @@ HRESULT AddThumbarButtons(HWND hwnd) {
 
   if (SUCCEEDED(hr)) {
     // Declare the image list that contains the button images.
-    // hr = ptbl->ThumbBarSetImageList(hwnd, himl);
+
+
+    hr = ptbl->ThumbBarSetImageList(hwnd, make_icons_for_buttons());
 
     if (SUCCEEDED(hr)) {
       // Attach the toolbar to the thumbnail.
@@ -139,10 +258,144 @@ HRESULT AddThumbarButtons(HWND hwnd) {
   return hr;
 }
 
-GdkFilterReturn buttons_evts_filter(GdkXEvent *gdk_xevent, GdkEvent *event,
-                                    gpointer user_data) {
+template<typename T>
+std::string to_hex_string(T integer) {
+  std::ostringstream os;
+  os << "0x" << std::setw(4) << std::setfill('0') << std::hex << integer;
+  return os.str();
+}
+
+#define CASE_WIN_PRINT(id) case id: return #id;
+template<typename T>
+std::string stringify_win_evt(T id) {
+  switch (id) {
+    CASE_WIN_PRINT(WM_DESTROY)
+    CASE_WIN_PRINT(WM_CREATE)
+    CASE_WIN_PRINT(WM_ACTIVATE)
+    CASE_WIN_PRINT(WM_ENABLE)
+    CASE_WIN_PRINT(WM_SHOWWINDOW)
+    CASE_WIN_PRINT(WM_WINDOWPOSCHANGING)
+    CASE_WIN_PRINT(WM_WINDOWPOSCHANGED)
+    CASE_WIN_PRINT(WM_NCACTIVATE)
+    CASE_WIN_PRINT(WM_NCPAINT)
+    CASE_WIN_PRINT(WM_NCCREATE)
+    CASE_WIN_PRINT(WM_ACTIVATEAPP)
+    CASE_WIN_PRINT(WM_KILLFOCUS)
+    CASE_WIN_PRINT(WM_SETFOCUS)
+    CASE_WIN_PRINT(WM_IME_SETCONTEXT)
+    CASE_WIN_PRINT(WM_IME_NOTIFY)
+    CASE_WIN_PRINT(WM_GETICON)
+    CASE_WIN_PRINT(WM_PAINT)
+    CASE_WIN_PRINT(WM_SETCURSOR)
+    CASE_WIN_PRINT(WM_MOUSEMOVE)
+    CASE_WIN_PRINT(WM_NCMOUSEMOVE)
+    CASE_WIN_PRINT(WM_MOUSEACTIVATE)
+    CASE_WIN_PRINT(WM_NCLBUTTONDOWN)
+    CASE_WIN_PRINT(WM_CAPTURECHANGED)
+    CASE_WIN_PRINT(WM_SYSCOMMAND)
+    CASE_WIN_PRINT(WM_CLOSE)
+    CASE_WIN_PRINT(WM_MOVING)
+    CASE_WIN_PRINT(WM_ERASEBKGND)
+    CASE_WIN_PRINT(WM_EXITMENULOOP)
+    CASE_WIN_PRINT(WM_NCMOUSELEAVE)
+    CASE_WIN_PRINT(WM_NCHITTEST)
+    CASE_WIN_PRINT(WM_EXITSIZEMOVE)
+    CASE_WIN_PRINT(WM_ENTERSIZEMOVE)
+    CASE_WIN_PRINT(WM_MOUSELEAVE)
+    CASE_WIN_PRINT(WM_PARENTNOTIFY)
+    CASE_WIN_PRINT(WM_NCCALCSIZE)
+    CASE_WIN_PRINT(WM_GETMINMAXINFO)
+    CASE_WIN_PRINT(WM_QUERYOPEN)
+    default: return "Unknown msg: " + to_hex_string(id);
+  }
+}
+
+//#define WIN_IF_IS_MSG(smth) reinterpret_cast<T>(smth) == w_msg
+//#define WIN_IF_IS_MSG_OR(smth) WIN_IF_IS_MSG(smth) ||
+
+int *counters{nullptr};
+
+template<typename T>
+void log_win_msg(T w_msg) {
+
+  switch (w_msg) {
+    case WM_NCMOUSELEAVE:
+    case WM_SETCURSOR:
+    case WM_MOUSEMOVE:
+    case WM_MOVING:
+    case WM_NCHITTEST:
+    case WM_MOUSELEAVE:
+    case WM_PAINT:
+    case WM_WINDOWPOSCHANGING:
+    case WM_WINDOWPOSCHANGED:
+    case WM_GETICON:
+    case WM_IME_SETCONTEXT :
+    case WM_IME_NOTIFY :
+    case WM_SETFOCUS :
+    case WM_SYSCOMMAND :
+    case WM_CAPTURECHANGED :
+    case WM_NCACTIVATE :
+    case WM_ACTIVATE :
+    case WM_ACTIVATEAPP :
+    case WM_KILLFOCUS :
+    case WM_NCMOUSEMOVE:return;
+    default:
+      if (!counters) {
+        counters = new int[2000000]();
+      }
+      L_HOTKEY_FLOW("Win msg: " + stringify_win_evt(w_msg) + " cnt: " + std::to_string(++counters[w_msg]));
+      break;
+  }
+}
+
+gboolean async_make_buttons(gpointer user_data) {
+  AddThumbarButtons(h_main_window);
+  return G_SOURCE_REMOVE;
+}
+
+/**
+ * Main window created for the first time. Set h_main_window and make it possible for main event filter to
+ * handle HIDE and SHOW events for main window.
+ *
+ * @param user_data HWND
+ * @return GDK_FILTER_CONTINUE
+ */
+gboolean async_make_buttons_first_time(gpointer user_data) {
+  h_main_window = reinterpret_cast<HWND>(user_data);
+  return async_make_buttons(nullptr);
+}
+
+GdkFilterReturn main_window_missing_filter(GdkXEvent *gdk_xevent, GdkEvent *event,
+                                           gpointer user_data) {
   auto msg = reinterpret_cast<MSG *>(gdk_xevent);
-  if (msg->message == WM_COMMAND) {
+  if (msg->message == WM_SHOWWINDOW && msg->wParam) {
+    auto win_data = WindowsWindow::get_window_data(msg->hwnd);
+    if (win_data.is_main_window()) {
+      // When window fully shows, must add windows buttons.
+      auto passed_data = reinterpret_cast<MainWindowSearchFilterData *> (user_data);
+      gdk_window_remove_filter(reinterpret_cast<GdkWindow *>(passed_data->window_),
+                               reinterpret_cast <GdkFilterFunc> (passed_data->function_ptr_),
+                               passed_data);
+      delete passed_data;
+      window_hidden = false;
+      g_idle_add(&async_make_buttons_first_time, win_data.handle_);
+    }
+  }
+  return GDK_FILTER_CONTINUE;
+}
+
+GdkFilterReturn w32_evts_filter(GdkXEvent *gdk_xevent, GdkEvent *event,
+                                gpointer user_data) {
+  auto msg = reinterpret_cast<MSG *>(gdk_xevent);
+  // log_win_msg(msg->message);
+  if (msg->message == WM_SHOWWINDOW) {
+    if (window_hidden && msg->wParam && msg->hwnd == h_main_window) {
+      // set false: Prevent accidentally calling g_idle_add again
+      window_hidden = false;
+      g_idle_add(&async_make_buttons, nullptr);
+    }
+    L_HOTKEY_FLOW("WM_SHOWWINDOW for HWND " + std::to_string(reinterpret_cast<intptr_t >( msg->hwnd)));
+  } else if (msg->message == WM_COMMAND) {
     auto buttonId = static_cast<short>(msg->wParam & 0xFFFF);
     AUDDBG("Clicked button with ID: %d", buttonId);
     switch (buttonId) {
@@ -155,7 +408,7 @@ GdkFilterReturn buttons_evts_filter(GdkXEvent *gdk_xevent, GdkEvent *event,
     }
     return GDK_FILTER_REMOVE;
   } else if (msg->message == WM_HOTKEY) {
-    auto k_id = static_cast<short>(msg->wParam & 0xFFFF);
+    auto k_id = LOWORD(msg->wParam);
     L_HOTKEY_FLOW("Global hotkey: " + std::to_string(k_id));
     // Max 20 HKs
     if (k_id >= W_FIRST_GLOBAL_KEY_ID && k_id < W_FIRST_GLOBAL_KEY_ID + 20) {
@@ -169,67 +422,22 @@ GdkFilterReturn buttons_evts_filter(GdkXEvent *gdk_xevent, GdkEvent *event,
       }
     }
   } else if (msg->message == WM_CLOSE) {
-    L_AUD_TESTING("W32 close event.");
-    // TODO unregister all that we added. If there is toolbar version ... open it.
+    if (h_main_window == msg->hwnd) {
+      window_hidden = true;
+    }
   }
   return GDK_FILTER_CONTINUE;
 }
-
-class Utf16CharArrConverter {
-  gchar *converted{nullptr};
- public:
-  Utf16CharArrConverter(const wchar_t *const input_w_str) :
-      converted(reinterpret_cast<char *>(g_utf16_to_utf8(
-          reinterpret_cast<const gunichar2 *> (input_w_str),
-          -1, nullptr, nullptr, nullptr))) {
-  }
-  ~Utf16CharArrConverter() {
-    if (converted) {
-      g_free(converted);
-    }
-  };
-  operator std::string() {
-    return std::string(converted);
-  }
-};
-
-struct WindowsWindow {
-  HWND handle_;
-  std::string class_name_;
-  std::string win_header_;
-
-  WindowsWindow(const HWND handle, std::string className, std::string winHeader)
-      : handle_(handle), class_name_(std::move(className)), win_header_(std::move(winHeader)) {}
-};
-
 struct EnumWindowsCallbackArgs {
-  wchar_t char_buf[311];
   explicit EnumWindowsCallbackArgs(DWORD p) : pid(p) {}
   const DWORD pid;
   std::vector<WindowsWindow> handles;
+
   void add_window(HWND pHwnd) {
-    auto num_char = GetClassNameW(pHwnd, char_buf, _countof(char_buf));
-    if (!num_char) {
-      AUDERR("WinApiError (code %ld) getting ClassName. Cannot get windows, hotkey plugin may not work.\n",
-             GetLastError());
-      return;
-    }
-    std::string w_class_name = Utf16CharArrConverter(char_buf);
-    num_char = GetWindowTextW(pHwnd, char_buf, _countof(char_buf));
-    if (!num_char) {
-      AUDERR("WinApiError (code %ld) getting WindowHeader. Cannot get windows, hotkey plugin may not work.\n",
-             GetLastError());
-      char_buf[0] = 0;
-      // return;
-    }
-    handles.emplace_back(pHwnd, std::move(w_class_name),
-                         char_buf[0] ?
-                         Utf16CharArrConverter(char_buf) : std::string{"[NO_TITLE]"}
-    );
+    handles.emplace_back(WindowsWindow::get_window_data(pHwnd));
   }
 };
 
-void get_and_print_app_windows();
 static BOOL CALLBACK EnumWindowsCallback(HWND hnd, LPARAM lParam) {
   // Get pointer to created callback object for storing data.
   auto *args = reinterpret_cast<EnumWindowsCallbackArgs *> ( lParam);
@@ -267,6 +475,19 @@ static BOOL CALLBACK EnumWindowsCallback(HWND hnd, LPARAM lParam) {
    IME: Default IME
  */
 
+std::string print_wins(const std::vector<WindowsWindow> &wins) {
+  std::string printer;
+  for (auto &w : wins) {
+    printer.append("\n   ").append(std::to_string(reinterpret_cast<long long> (w.handle_)))
+        .append("(gdk:")
+        .append(std::to_string(reinterpret_cast<long long> (gdk_win32_handle_table_lookup(w.handle_))))
+        .append(") ")
+        .append(w.class_name_).append(
+            ": ").append(w.win_header_);
+  }
+  return printer;
+}
+
 std::vector<WindowsWindow> get_this_app_windows() {
   // Create object that will hold a result.
   EnumWindowsCallbackArgs args(GetCurrentProcessId());
@@ -277,55 +498,73 @@ std::vector<WindowsWindow> get_this_app_windows() {
     AUDERR("WinApiError (code %ld). Cannot get windows, hotkey plugin won't work.\n", GetLastError());
     return std::vector<WindowsWindow>{};
   }
-  return args.handles;
+#ifndef NDEBUG
+  AUDDBG ("Aud has %zu windows: %s", args.handles.size(), print_wins(args.handles).c_str());
+#endif
+  return std::move(args.handles);
 }
 
-//void loop_function<>
+enum class WinSearchResult {
+  NONE,
+  MAIN_WINDOW,
+  TASKBAR
+};
 
-/**
- * GSourceFunc:
- * @user_data: data passed to the function, set when the source was
- *     created with one of the above functions
- *
- * Specifies the type of function passed to g_timeout_add(),
- * g_timeout_add_full(), g_idle_add(), and g_idle_add_full().
- *
- * Returns: %FALSE if the source should be removed. #G_SOURCE_CONTINUE and
- * #G_SOURCE_REMOVE are more memorable names for the return value.
- */
-gboolean window_created_callback(gpointer user_data) {
-  L_HOTKEY_FLOW("Window created. Do real stuff.");
-  get_and_print_app_windows();
-
-//  std::thread *spawned = new std::thread([]() {
-//    while (true) {
-//      get_and_print_app_windows();
-//      std::this_thread::sleep_for(std::chrono::seconds(2));
-//    }
-//  });
-
-  //
-//  AddThumbarButtons(the_hwnd);
-//  auto gdkwin = gdk_win32_handle_table_lookup(the_hwnd);
-//  gdk_window_add_filter((GdkWindow *) gdkwin, buttons_evts_filter,
-//                        nullptr);
-//  register_global_keys(the_hwnd);
-  return G_SOURCE_REMOVE;
-}
-void get_and_print_app_windows() {
-  auto wins = get_this_app_windows();
-  L_HOTKEY_FLOW("windows: ");
-  std::string printer;
-  for (auto &w : wins) {
-    printer.append("\n   ").append(w.class_name_).append(": ").append(w.win_header_);
+std::pair<std::vector<WindowsWindow>::const_iterator, WinSearchResult> find_message_receiver_window
+    (const std::vector<WindowsWindow> &ws) {
+  auto main_win =
+      std::find_if(ws.begin(),
+                   ws.end(),
+                   [](const WindowsWindow &itm) { return itm.is_main_window(); });
+  if (main_win == ws.end()) {
+    AUDDBG("Win API did not find the main window. It will seek taskbar icon.");
+  } else {
+    return std::make_pair(main_win, WinSearchResult::MAIN_WINDOW);
   }
-  L_HOTKEY_FLOW("Aud has " + std::to_string(wins.size()) + " windows: " + printer);
+  main_win = std::find_if(ws.begin(),
+                          ws.end(),
+                          [](const WindowsWindow &itm) { return itm.class_name_ == "gtkstatusicon-observer"; });
+  if (main_win == ws.end()) {
+    return std::make_pair(main_win, WinSearchResult::NONE);
+  }
+  return std::make_pair(main_win, WinSearchResult::TASKBAR);
+}
+
+gboolean window_created_callback(gpointer user_data) {
+  AUDDBG("Window created. Do real stuff.");
+  auto ws = get_this_app_windows();
+  std::vector<WindowsWindow>::const_iterator main_win;
+  WinSearchResult search_type;
+  std::tie(main_win, search_type) = find_message_receiver_window(ws);
+  if (search_type == WinSearchResult::MAIN_WINDOW) {
+    window_hidden = false;
+    h_main_window = main_win->handle_;
+    L_HOTKEY_FLOW("P1: Handle is: " + std::to_string(reinterpret_cast<unsigned long long >(main_win->handle_)));
+    AddThumbarButtons(main_win->handle_);
+    L_HOTKEY_FLOW("P2: Handle is: " + std::to_string(reinterpret_cast<unsigned long long >(main_win->handle_)));
+  } else if (search_type == WinSearchResult::TASKBAR) {
+    window_hidden = true;
+    // We did not find main window .. add a filter that finds it once it comes up.
+    auto *cb_data = new MainWindowSearchFilterData(gdk_win32_handle_table_lookup(main_win->handle_),
+                                                   reinterpret_cast<void *>( &main_window_missing_filter));
+    gdk_window_add_filter((GdkWindow *) cb_data->window_, &main_window_missing_filter,
+                          cb_data);
+  } else {
+    AUDERR("Win API did not find the window to receive messages. Global hotkeys are disabled!");
+    return G_SOURCE_REMOVE;
+  }
+  L_HOTKEY_FLOW("P3: \n     Handle is (setting up event loop): "
+                    + std::to_string(reinterpret_cast<unsigned long long >(main_win->handle_))
+                    + "\n     For window with class: "
+                    + main_win->win_header_ + "\n     And header: " + main_win->class_name_);
+  gdk_window_add_filter((GdkWindow *) gdk_win32_handle_table_lookup(main_win->handle_), w32_evts_filter,
+                        nullptr);
+  register_global_keys(main_win->handle_);
+  return G_SOURCE_REMOVE;
 }
 
 void win_init() {
-  L_HOTKEY_FLOW("Win .. important call.");
-  g_idle_add(&window_created_callback,
-             nullptr);
+  g_idle_add(&window_created_callback, nullptr);
 }
 
 void Hotkey::key_to_string(int key, char **out_keytext) {
@@ -370,3 +609,24 @@ void Hotkey::key_to_string(int key, char **out_keytext) {
   }
   *out_keytext = g_strdup(WIN_VK_NAMES[key]);
 }
+
+// TODO: Some final testing. Finish icons (of not yet).
+// TODO: Includes cleanup
+// TODO: Compile and use (also on job).
+
+// OPTIONS:
+/*
+StatusIcon enabled, window shows
+StatusIcon enabled, window HIDDEN
+StatusIcon disabled
+
+
+ */
+
+// UTIL1: spam print windows.
+//  std::thread *spawned = new std::thread([]() {
+//    while (true) {
+//      get_and_print_app_windows();
+//      std::this_thread::sleep_for(std::chrono::seconds(2));
+//    }
+//  });

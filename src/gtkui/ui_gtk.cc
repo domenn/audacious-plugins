@@ -247,6 +247,8 @@ static void title_change (void * = nullptr)
     gtk_window_set_title ((GtkWindow *) window, title);
 }
 
+#include <string>
+
 void GtkUI::show (bool show)
 {
     if (show)
@@ -254,7 +256,10 @@ void GtkUI::show (bool show)
         if (! gtk_widget_get_visible (window))
             restore_window_size ();
 
+
         gtk_window_present ((GtkWindow *) window);
+        AUDWARN(("Presenting: " + std::to_string(reinterpret_cast<long long> (window))).c_str());
+
     }
     else
     {

@@ -181,7 +181,14 @@ bool SIDPlugin::play(const char *filename, VFSFile &file)
     while (! check_stop ())
     {
         if (check_seek () >= 0)
-            AUDWARN ("Seeking is not implemented, ignoring.\n");
+          do {
+            audlog::log(audlog::Warning,
+                        "_file_name_",
+                        184,
+                        "_function_name_",
+                        "Seeking is not implemented, ignoring.\n");
+          }
+          while (0);
 
         int bufRemaining = xs_sidplayfp_fillbuffer(audioBuffer, audioBufSize);
 
