@@ -9,7 +9,6 @@
 #include <vector>
 #include <libaudcore/runtime.h>
 #include <gtk/gtkeditable.h>
-#include <gdk/gdkkeysyms.h>
 #include <glib.h>
 #include <libaudcore/named_logger_macros.h>
 #include <cstring>
@@ -18,22 +17,25 @@
 #include <algorithm>
 #include <iomanip>
 #include <sstream>
-#ifndef NDEBUG
-#include <cassert>
-#endif
+#include <libaudcore/hook.h>
+#include <libaudcore/i18n.h>
+#include <src/hotkey/grab.h>
 
+#include "w32_common_headers.h"
 #include "windows_key_str_map.h"
-#include "src/hotkeyw32/res/resource.h"
-
-#include "w32_resources_icons.hpp"
-
-constexpr auto W_KEY_ID_PLAY = 18771;
-constexpr auto W_KEY_ID_PREV = 18772;
-constexpr auto W_KEY_ID_NEXT = 18773;
-constexpr auto W_FIRST_GLOBAL_KEY_ID = 18774;
 
 bool window_hidden{false};
+/**
+ * Handle to window that has thumbbar buttons associated. Nullptr if it is not on display.
+ */
 HWND h_main_window{nullptr};
+HWND handle_hotkey_association{nullptr};
+GdkWindow *w32_add_filter_ptr{nullptr};
+bool aud_evts_hooked{false};
+auto win_registration_hotkey_id = W_FIRST_GLOBAL_KEY_ID;
+
+GdkFilterReturn w32_evts_filter(GdkXEvent *gdk_xevent, GdkEvent *event, gpointer user_data);
+void create_and_hook_thumbbar();
 
 class Utf16CharArrConverter {
   gchar *converted{nullptr};
@@ -106,9 +108,48 @@ struct WindowsWindow {
   WindowsWindow(HWND handle, std::string className, std::string winHeader)
       : handle_(handle), class_name_(std::move(className)), win_header_(std::move(winHeader)) {}
 
+  static std::string translated_title() {
+    // get "%s - <translatedAudacious>"
+    std::string org = N_("%s - Audacious");
+    // erase %s
+    org.erase(0, 2);
+    return org;
+  }
+
   bool is_main_window() const {
     return class_name_ == "gdkWindowToplevel"
-        && win_header_.find("udacious") != std::string::npos;
+        && [](const std::string &title) {
+          return title == N_("Audacious")
+              || title.find(translated_title()) != std::string::npos
+              || title == N_("Buffering ...");// msgid "%s - Audacious"
+        }(win_header_)
+//        [this]() {
+//          L_HOTKEY_FLOW("Will call GetParent for found MainWindow: " + static_cast<std::string>(*this));
+//          auto pr = GetParent(handle_);
+//          if (pr) {
+//            auto pw = get_window_data(pr);
+//            L_HOTKEY_FLOW("Found parent: " + static_cast<std::string>(pw));
+//            return pw.is_main_window();
+//          } else {
+//            L_HOTKEY_FLOW("No parent for me. Win err: " + format_windows_error("GetParent"));
+//            return true;
+//          }
+//        }()
+        ;
+  }
+
+  operator std::string() const {
+    if (!handle_) {
+      return "INVALID_WINDOW";
+    }
+    std::string printer;
+    printer.append(std::to_string(reinterpret_cast<long long> (handle_)))
+        .append("(gdk:")
+        .append(std::to_string(reinterpret_cast<long long> (gdk_win32_handle_table_lookup(handle_))))
+        .append(") ")
+        .append(class_name_).append(
+            ": ").append(win_header_);
+    return printer;
   }
 
   static WindowsWindow get_window_data(HWND pHwnd) {
@@ -171,91 +212,31 @@ void Hotkey::add_hotkey(HotkeyConfiguration **pphotkey, Hotkey::OS_KeySym keysym
   photkey->type = type;
 }
 
+void unregister_global_keys() {
+  while (win_registration_hotkey_id > W_FIRST_GLOBAL_KEY_ID) {
+    if (!UnregisterHotKey(handle_hotkey_association, --win_registration_hotkey_id)) {
+      AUDWARN(format_windows_error("UnregisterHotKey").c_str());
+    }
+  }
+  handle_hotkey_association = nullptr;
+}
+
 void register_global_keys(HWND handle) {
-#ifndef NDEBUG
-  static char called{0};
-  assert(!called++ && "This function should only be called once!");
-#endif
+  if (handle_hotkey_association) {
+    AUDWARN("Hotkeys already registered. This should not've happened, probably a software bug.");
+    return;
+  }
+  handle_hotkey_association = handle;
   L_HOTKEY_FLOW("Registering for handle: " + std::to_string(reinterpret_cast<unsigned long long >(handle)));
   auto *hotkey = &(plugin_cfg.first);
-  auto _id = W_FIRST_GLOBAL_KEY_ID;
   while (hotkey) {
-    if (!RegisterHotKey(handle, _id++, hotkey->mask, hotkey->key)) {
+    if (!RegisterHotKey(handle, win_registration_hotkey_id++, hotkey->mask, hotkey->key)) {
       AUDWARN(format_windows_error("RegisterHotKey").c_str());
     } else {
       AUDDBG("Registered a hotkey: %u", hotkey->key);
     }
     hotkey = hotkey->next;
   }
-}
-
-//void assign(wchar_t *ptr_first_element, const wchar_t *text) {
-//  int loc = 0;
-//  while (text[loc]) {
-//    ptr_first_element[loc] = text[loc];
-//    ++loc;
-//  }
-//  ptr_first_element[loc] = 0;
-//}
-
-HRESULT AddThumbarButtons(HWND hwnd) {
-  // Define an array of two buttons. These buttons provide images through an
-  // image list and also provide tooltips.
-  THUMBBUTTONMASK dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-
-  /*
-    THUMBBUTTONMASK dwMask;
-    UINT iId;
-    UINT iBitmap;
-    HICON hIcon;
-    WCHAR szTip[260];
-    THUMBBUTTONFLAGS dwFlags;
-    */
-
-  auto ics = load_icons();
-  THUMBBUTTON btn[]{{
-                        dwMask,
-                        W_KEY_ID_PREV,
-                        0,
-                        ics[0],
-                        L"Previous song",
-                        THBF_ENABLED
-                    },
-                    {
-                        dwMask,
-                        W_KEY_ID_PLAY,
-                        1,
-                        ics[1],
-                        L"Play/pause",
-                        THBF_ENABLED
-                    },
-                    {
-                        dwMask,
-                        W_KEY_ID_NEXT,
-                        2,
-                        ics[2],
-                        L"Next song",
-                        THBF_ENABLED
-                    }
-  };
-
-  ITaskbarList3 *ptbl;
-  HRESULT hr = CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER,
-                                IID_PPV_ARGS(&ptbl));
-
-  if (SUCCEEDED(hr)) {
-    // Declare the image list that contains the button images.
-
-
-    hr = ptbl->ThumbBarSetImageList(hwnd, make_icons_for_buttons());
-
-    if (SUCCEEDED(hr)) {
-      // Attach the toolbar to the thumbnail.
-      hr = ptbl->ThumbBarAddButtons(hwnd, ARRAYSIZE(btn), btn);
-    }
-    ptbl->Release();
-  }
-  return hr;
 }
 
 template<typename T>
@@ -348,9 +329,16 @@ void log_win_msg(T w_msg) {
   }
 }
 
-gboolean async_make_buttons(gpointer user_data) {
-  AddThumbarButtons(h_main_window);
+gboolean async_make_thumb_buttons(gpointer user_data) {
+  create_and_hook_thumbbar();
   return G_SOURCE_REMOVE;
+}
+
+void register_buttons_with_main_window(const WindowsWindow &main_win) {
+  L_HOTKEY_FLOW("P3: \n     Setting up event loop with win: " + static_cast<std::string>(main_win));
+  w32_add_filter_ptr = reinterpret_cast<GdkWindow *> (gdk_win32_handle_table_lookup(main_win.handle_));
+  gdk_window_add_filter(w32_add_filter_ptr, w32_evts_filter, nullptr);
+  register_global_keys(main_win.handle_);
 }
 
 /**
@@ -362,7 +350,20 @@ gboolean async_make_buttons(gpointer user_data) {
  */
 gboolean async_make_buttons_first_time(gpointer user_data) {
   h_main_window = reinterpret_cast<HWND>(user_data);
-  return async_make_buttons(nullptr);
+  register_buttons_with_main_window(WindowsWindow::get_window_data(h_main_window));
+  return async_make_thumb_buttons(nullptr);
+}
+
+void main_window_created_from_statusbar(MainWindowSearchFilterData *const passed_data,
+                                        WindowsWindow &created_main_window) {
+  // When window fully shows, must add windows buttons.
+  gdk_window_remove_filter(reinterpret_cast<GdkWindow *>(passed_data->window_),
+                           reinterpret_cast <GdkFilterFunc> (passed_data->function_ptr_),
+                           passed_data);
+  ungrab_keys();
+  release_filter();
+  delete passed_data;
+  g_idle_add(&async_make_buttons_first_time, created_main_window.handle_);
 }
 
 GdkFilterReturn main_window_missing_filter(GdkXEvent *gdk_xevent, GdkEvent *event,
@@ -371,14 +372,7 @@ GdkFilterReturn main_window_missing_filter(GdkXEvent *gdk_xevent, GdkEvent *even
   if (msg->message == WM_SHOWWINDOW && msg->wParam) {
     auto win_data = WindowsWindow::get_window_data(msg->hwnd);
     if (win_data.is_main_window()) {
-      // When window fully shows, must add windows buttons.
-      auto passed_data = reinterpret_cast<MainWindowSearchFilterData *> (user_data);
-      gdk_window_remove_filter(reinterpret_cast<GdkWindow *>(passed_data->window_),
-                               reinterpret_cast <GdkFilterFunc> (passed_data->function_ptr_),
-                               passed_data);
-      delete passed_data;
-      window_hidden = false;
-      g_idle_add(&async_make_buttons_first_time, win_data.handle_);
+      main_window_created_from_statusbar(reinterpret_cast<MainWindowSearchFilterData *> (user_data), win_data);
     }
   }
   return GDK_FILTER_CONTINUE;
@@ -392,7 +386,7 @@ GdkFilterReturn w32_evts_filter(GdkXEvent *gdk_xevent, GdkEvent *event,
     if (window_hidden && msg->wParam && msg->hwnd == h_main_window) {
       // set false: Prevent accidentally calling g_idle_add again
       window_hidden = false;
-      g_idle_add(&async_make_buttons, nullptr);
+      g_idle_add(&async_make_thumb_buttons, nullptr);
     }
     L_HOTKEY_FLOW("WM_SHOWWINDOW for HWND " + std::to_string(reinterpret_cast<intptr_t >( msg->hwnd)));
   } else if (msg->message == WM_COMMAND) {
@@ -410,23 +404,31 @@ GdkFilterReturn w32_evts_filter(GdkXEvent *gdk_xevent, GdkEvent *event,
   } else if (msg->message == WM_HOTKEY) {
     auto k_id = LOWORD(msg->wParam);
     L_HOTKEY_FLOW("Global hotkey: " + std::to_string(k_id));
-    // Max 20 HKs
-    if (k_id >= W_FIRST_GLOBAL_KEY_ID && k_id < W_FIRST_GLOBAL_KEY_ID + 20) {
+// Max 20 HKs
+    if (k_id >=
+        W_FIRST_GLOBAL_KEY_ID && k_id < W_FIRST_GLOBAL_KEY_ID
+        + 20) {
       auto idx = k_id - W_FIRST_GLOBAL_KEY_ID;
       auto *config = &plugin_cfg.first;
       while (idx--) {
         config = config->next;
       }
-      if (handle_keyevent(config->event)) {
-        return GDK_FILTER_REMOVE;
+      if (
+          handle_keyevent(config
+                              ->event)) {
+        return
+            GDK_FILTER_REMOVE;
       }
     }
   } else if (msg->message == WM_CLOSE) {
     if (h_main_window == msg->hwnd) {
       window_hidden = true;
+      ComObjectHolder::com_object_holder.
+          release_resources();
     }
   }
-  return GDK_FILTER_CONTINUE;
+  return
+      GDK_FILTER_CONTINUE;
 }
 struct EnumWindowsCallbackArgs {
   explicit EnumWindowsCallbackArgs(DWORD p) : pid(p) {}
@@ -476,14 +478,9 @@ static BOOL CALLBACK EnumWindowsCallback(HWND hnd, LPARAM lParam) {
  */
 
 std::string print_wins(const std::vector<WindowsWindow> &wins) {
-  std::string printer;
+  std::string printer("Aud has " + std::to_string(wins.size()) + " windows:");
   for (auto &w : wins) {
-    printer.append("\n   ").append(std::to_string(reinterpret_cast<long long> (w.handle_)))
-        .append("(gdk:")
-        .append(std::to_string(reinterpret_cast<long long> (gdk_win32_handle_table_lookup(w.handle_))))
-        .append(") ")
-        .append(w.class_name_).append(
-            ": ").append(w.win_header_);
+    printer.append(w);
   }
   return printer;
 }
@@ -529,7 +526,6 @@ std::pair<std::vector<WindowsWindow>::const_iterator, WinSearchResult> find_mess
   }
   return std::make_pair(main_win, WinSearchResult::TASKBAR);
 }
-
 gboolean window_created_callback(gpointer user_data) {
   AUDDBG("Window created. Do real stuff.");
   auto ws = get_this_app_windows();
@@ -540,7 +536,7 @@ gboolean window_created_callback(gpointer user_data) {
     window_hidden = false;
     h_main_window = main_win->handle_;
     L_HOTKEY_FLOW("P1: Handle is: " + std::to_string(reinterpret_cast<unsigned long long >(main_win->handle_)));
-    AddThumbarButtons(main_win->handle_);
+    create_and_hook_thumbbar();
     L_HOTKEY_FLOW("P2: Handle is: " + std::to_string(reinterpret_cast<unsigned long long >(main_win->handle_)));
   } else if (search_type == WinSearchResult::TASKBAR) {
     window_hidden = true;
@@ -553,17 +549,53 @@ gboolean window_created_callback(gpointer user_data) {
     AUDERR("Win API did not find the window to receive messages. Global hotkeys are disabled!");
     return G_SOURCE_REMOVE;
   }
-  L_HOTKEY_FLOW("P3: \n     Handle is (setting up event loop): "
-                    + std::to_string(reinterpret_cast<unsigned long long >(main_win->handle_))
-                    + "\n     For window with class: "
-                    + main_win->win_header_ + "\n     And header: " + main_win->class_name_);
-  gdk_window_add_filter((GdkWindow *) gdk_win32_handle_table_lookup(main_win->handle_), w32_evts_filter,
-                        nullptr);
-  register_global_keys(main_win->handle_);
+  register_buttons_with_main_window(*main_win);
   return G_SOURCE_REMOVE;
 }
 
-void win_init() {
+/**
+ * Callback that is hooked.
+ * @param started_playing If 1, then playback has started. Otherwise, it has ended.
+ */
+void hk_icon_callback(void *, void *started_playing) {
+  auto playback_active = reinterpret_cast<intptr_t >(started_playing);
+  if (ComObjectHolder::com_object_holder.set_type(
+      playback_active ? ComObjectHolder::ButtonToRender::PAUSE : ComObjectHolder::ButtonToRender::PLAY
+  )) {
+    ComObjectHolder::com_object_holder.update_buttons<false>();
+  }
+}
+
+void ungrab_keys() {
+  if (aud_evts_hooked) {
+    hook_dissociate("playback begin", hk_icon_callback, reinterpret_cast<void *>(1));
+    hook_dissociate("playback stop", hk_icon_callback, reinterpret_cast<void *>(0));
+    hook_dissociate("playback pause", hk_icon_callback, reinterpret_cast<void *>(0));
+    hook_dissociate("playback unpause", hk_icon_callback, reinterpret_cast<void *>(1));
+    aud_evts_hooked = false;
+  }
+  unregister_global_keys();
+
+  ComObjectHolder::com_object_holder.release_resources();
+}
+
+void release_filter() {
+  if (!w32_add_filter_ptr) { return; }
+  gdk_window_remove_filter(w32_add_filter_ptr, w32_evts_filter, nullptr);
+  w32_add_filter_ptr = nullptr;
+  window_hidden = false;
+  h_main_window = nullptr;
+}
+
+/*
+If paused, sends playback unpause (when playback starts) or pause (obvious).
+If stopped, calls playback begin.
+At end of playlist or stop button calls playback stop.
+  */
+
+
+
+void grab_keys() {
   g_idle_add(&window_created_callback, nullptr);
 }
 
@@ -610,9 +642,26 @@ void Hotkey::key_to_string(int key, char **out_keytext) {
   *out_keytext = g_strdup(WIN_VK_NAMES[key]);
 }
 
-// TODO: Some final testing. Finish icons (of not yet).
-// TODO: Includes cleanup
-// TODO: Compile and use (also on job).
+void create_and_hook_thumbbar() {
+  ComObjectHolder::com_object_holder.create_buttons(h_main_window);
+  if (!aud_evts_hooked) {
+    hook_associate("playback begin", hk_icon_callback, reinterpret_cast<void *>(1));
+    hook_associate("playback stop", hk_icon_callback, reinterpret_cast<void *>(0));
+    hook_associate("playback pause", hk_icon_callback, reinterpret_cast<void *>(0));
+    hook_associate("playback unpause", hk_icon_callback, reinterpret_cast<void *>(1));
+    aud_evts_hooked = true;
+  }
+}
+
+// TODO: [unregister_global_keys]: UnregisterHotKey exited with code 1400 : Invalid window handle.
+  // Always happens at exit. Looks like window is already dead.
+// TODO: Rewrite .. unified show/destroy .. statusIcon or not. Must always work.
+//   Problem 1: closing and opening window doesn't add buttons.
+//   Problem 2: closing and opening sometimes crashes. Other times, shows .. and other times hides. Difference if displayed at start or not (status only).
+//      Might be better idea to simply disable all support for statusicon .. Since it doesn't grab global hotkeys anyway.
+//      Just have grab and ungrab .. if already grabbed, do nothing.
+// TODO: Modifiers are incorrectly written in Settings. But appear to work.
+// TODO: Configuring global keys requires audacious restart. How is it on Linux? Maybe needs improvments.
 
 // OPTIONS:
 /*

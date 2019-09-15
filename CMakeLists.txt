@@ -33,6 +33,6 @@ if (WIN32)
   # include_directories(${GTK2_INCLUDE_DIRS})
 endif ()
 
-file(GLOB_RECURSE aud_srcs "./src/*.cpp" "./src/*.hpp" "./src/*.c" "./src/*.cc" "./src/*.h")
+file(GLOB_RECURSE aud_srcs "./src/*.cpp" "./src/*.hpp" "./src/*.c" "./src/*.cc" "./src/*.h" ./src/hotkeyw32/res/thumb_icons_map.rc)
 
 add_library(audaciousPlugins ${aud_srcs})

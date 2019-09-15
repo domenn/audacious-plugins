@@ -102,10 +102,9 @@ bool GlobalHotkeys::init ()
         AUDERR ("GTK+ initialization failed.\n");
         return false;
     }
-#ifdef _WIN32
-  win_init();
-#endif
+#ifndef _WIN32
     setup_filter();
+#endif
     load_config ( );
   grab_keys ();
     return true;

@@ -34,14 +34,7 @@
  */
 
 #include <gtk/gtk.h>
-
-#ifndef _WIN32
 #include <gdk/gdkx.h>
-#else
-#include <X11/Xlib.h>
-#include <libaudcore/named_logger_macros.h>
-#include <cassert>
-#endif
 
 #include "grab.h"
 #include "plugin.h"
@@ -53,87 +46,6 @@ static unsigned int scrolllock_mask = 0;
 static unsigned int capslock_mask = 0;
 
 
-static int x11_error_handler (Display *dpy, XErrorEvent *error)
-{
-    return 0;
-}
-
-static GdkFilterReturn
-gdk_filter(GdkXEvent *xevent,
-           GdkEvent *event,
-           void * data)
-{
-#ifdef _WIN32
-  L_HOTKEY_FLOW("win CommonGrab: Filter trigger.");
-  assert(false);
-#endif
-  HotkeyConfiguration *hotkey;
-  hotkey = &(get_config()->first);
-  switch (((XEvent*)xevent)->type)
-  {
-    case KeyPress:
-    {
-      XKeyEvent *keyevent = (XKeyEvent*)xevent;
-      while (hotkey)
-      {
-        if ((hotkey->key == keyevent->keycode) &&
-            (hotkey->mask == (keyevent->state & ~(scrolllock_mask | numlock_mask | capslock_mask))) &&
-            (hotkey->type == TYPE_KEY))
-        {
-          if (handle_keyevent(hotkey->event))
-            return GDK_FILTER_REMOVE;
-          break;
-        }
-
-        hotkey = hotkey->next;
-      }
-      break;
-    }
-    case ButtonPress:
-    {
-      XButtonEvent *buttonevent = (XButtonEvent*)xevent;
-      while (hotkey)
-      {
-        if ((hotkey->key == buttonevent->button) &&
-            (hotkey->mask == (buttonevent->state & ~(scrolllock_mask | numlock_mask | capslock_mask))) &&
-            (hotkey->type == TYPE_MOUSE))
-        {
-          if (handle_keyevent(hotkey->event))
-            return GDK_FILTER_REMOVE;
-          break;
-        }
-
-        hotkey = hotkey->next;
-      }
-
-      break;
-    }
-  }
-
-  return GDK_FILTER_CONTINUE;
-}
-
-gboolean setup_filter()
-{
-#ifdef _WIN32
-  L_HOTKEY_FLOW("win CommonGrab: filter up");
-#endif
-  gdk_window_add_filter (gdk_screen_get_root_window
-                             (gdk_screen_get_default ()), gdk_filter, nullptr);
-
-  return true;
-}
-
-void release_filter()
-{
-#ifdef _WIN32
-  L_HOTKEY_FLOW("win CommonGrab: down filter");
-#endif
-  gdk_window_remove_filter (gdk_screen_get_root_window
-                                (gdk_screen_get_default ()), gdk_filter, nullptr);
-}
-
-#ifndef _WIN32
 /* Taken from xbindkeys */
 static void get_offending_modifiers (Display * dpy)
 {
@@ -142,8 +54,8 @@ static void get_offending_modifiers (Display * dpy)
     KeyCode nlock, slock;
 
     static int mask_table[8] = {
-        HK_SHIFT_MASK, LockMask, HK_CONTROL_MASK, HK_MOD1_ALT_MASK,
-        HK_MOD2_MASK, HK_MOD3_MASK, HK_MOD4_MASK, HK_MOD5_MASK
+        ShiftMask, LockMask, ControlMask, Mod1Mask,
+        Mod2Mask, Mod3Mask, Mod4Mask, Mod5Mask
     };
 
     nlock = XKeysymToKeycode (dpy, XK_Num_Lock);
@@ -170,6 +82,12 @@ static void get_offending_modifiers (Display * dpy)
 
     if (modmap)
         XFreeModifiermap (modmap);
+}
+
+
+static int x11_error_handler (Display *dpy, XErrorEvent *error)
+{
+    return 0;
 }
 
 /* grab required keys */
@@ -402,4 +320,69 @@ void ungrab_keys ( )
 
     grabbed = 0;
 }
-#endif
+
+
+static GdkFilterReturn
+gdk_filter(GdkXEvent *xevent,
+       GdkEvent *event,
+       void * data)
+{
+    HotkeyConfiguration *hotkey;
+    hotkey = &(get_config()->first);
+    switch (((XEvent*)xevent)->type)
+    {
+    case KeyPress:
+        {
+            XKeyEvent *keyevent = (XKeyEvent*)xevent;
+            while (hotkey)
+            {
+                if ((hotkey->key == keyevent->keycode) &&
+                    (hotkey->mask == (keyevent->state & ~(scrolllock_mask | numlock_mask | capslock_mask))) &&
+                    (hotkey->type == TYPE_KEY))
+                {
+                    if (handle_keyevent(hotkey->event))
+                        return GDK_FILTER_REMOVE;
+                    break;
+                }
+
+                hotkey = hotkey->next;
+            }
+            break;
+        }
+    case ButtonPress:
+        {
+            XButtonEvent *buttonevent = (XButtonEvent*)xevent;
+            while (hotkey)
+            {
+                if ((hotkey->key == buttonevent->button) &&
+                    (hotkey->mask == (buttonevent->state & ~(scrolllock_mask | numlock_mask | capslock_mask))) &&
+                    (hotkey->type == TYPE_MOUSE))
+                {
+                    if (handle_keyevent(hotkey->event))
+                        return GDK_FILTER_REMOVE;
+                    break;
+                }
+
+                hotkey = hotkey->next;
+            }
+
+            break;
+        }
+    }
+
+    return GDK_FILTER_CONTINUE;
+}
+
+gboolean setup_filter()
+{
+    gdk_window_add_filter (gdk_screen_get_root_window
+     (gdk_screen_get_default ()), gdk_filter, nullptr);
+
+    return true;
+}
+
+void release_filter()
+{
+    gdk_window_remove_filter (gdk_screen_get_root_window
+     (gdk_screen_get_default ()), gdk_filter, nullptr);
+}
