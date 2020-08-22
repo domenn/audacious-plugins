@@ -65,7 +65,7 @@ static void get_offending_modifiers (Display * dpy)
     * Find out the masks for the NumLock and ScrollLock modifiers,
     * so that we can bind the grabs for when they are enabled too.
     */
-    modmap = XGetModifierMapping (dpy);
+    // modmap = XGetModifierMapping (dpy);
 
     if (modmap != nullptr && modmap->max_keypermod > 0)
     {

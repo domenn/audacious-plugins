@@ -3,6 +3,8 @@
 
 #include <QtCore/QList>
 
+class QHotkey;
+
 namespace GlobalHotkeys
 {
 
@@ -39,7 +41,7 @@ enum class Event
 
 struct HotkeyConfiguration
 {
-    unsigned key, mask;
+    QHotkey * q_hotkey;
     Event event;
 };
 

@@ -21,11 +21,18 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -include config.h")
 
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTK2 REQUIRED glib-2.0 gtk+-2.0)
-message(STATUS "gtk2 at: ${GTK2_INCLUDE_DIRS}")
+PKG_CHECK_MODULES(GTK2 REQUIRED glib-2.0 gtk+-2.0)
+# PKG_CHECK_MODULES(QT5 REQUIRED Qt5Core Qt5Widgets)
+message(STATUS "gtk2 at: ${GTK2_INCLUDE_DIRS}\n and qt at ${QT5_INCLUDE_DIRS}")
+
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+
+# message(WARNING qt5 "inc ${Qt5_INCLUDE_DIR}")
+
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/dbus ${GTK2_INCLUDE_DIRS} C:/aud/include C:/Qt/5.12.9/mingw73_32/include
     )
 
 file(GLOB_RECURSE aud_srcs "./src/*.cpp" "./src/*.hpp" "./src/*.c" "./src/*.cc" "./src/*.h")
 
 add_library(audaciousPlugins ${aud_srcs})
+target_link_libraries(audaciousPlugins Qt5::Core Qt5::Widgets)

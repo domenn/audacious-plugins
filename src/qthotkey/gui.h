@@ -6,6 +6,7 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QKeySequenceEdit>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
@@ -16,18 +17,17 @@
 #include "plugin.h"
 
 struct PluginPreferences;
+class QSignalMapper;
 
 namespace GlobalHotkeys
 {
-
-class LineKeyEdit;
 
 extern const PluginPreferences hotkey_prefs;
 
 struct KeyControls
 {
     QComboBox * combobox;
-    LineKeyEdit * keytext;
+    QKeySequenceEdit * keytext;
     QToolButton * button;
 
     HotkeyConfiguration hotkey;
@@ -58,6 +58,7 @@ private:
     QLabel * key_binding_label;
     QPushButton * add_button;
     QHBoxLayout * add_button_layout;
+    QSignalMapper * signal_mapper;
 
     QList<KeyControls *> controls_list;
 

@@ -560,8 +560,8 @@ ENABLE_PLUGIN_WITH_DEP(qthotkey,
     global hotkeys (X11),
     auto,
     GENERAL,
-    QTX11EXTRAS,
-    Qt5X11Extras)
+    QTMULTIMEDIA,
+    Qt5Multimedia)
 
 dnl CoreAudio
 dnl =========

@@ -98,46 +98,46 @@ static void set_keytext (GtkWidget *entry, int key, int mask, int type)
 {
     char *text = nullptr;
 
-    if (key == 0 && mask == 0)
-    {
-        text = g_strdup(_("(none)"));
-    } else {
-        static const char *modifier_string[] = { "Control", "Shift", "Alt", "Mod2", "Mod3", "Super", "Mod5" };
-        static const unsigned int modifiers[] = { ControlMask, ShiftMask, Mod1Mask, Mod2Mask, Mod3Mask, Mod4Mask, Mod5Mask };
-        const char *strings[9];
-        char *keytext = nullptr;
-        int i, j;
-        if (type == TYPE_KEY)
-        {
-            KeySym keysym;
-            keysym = XkbKeycodeToKeysym(GDK_DISPLAY_XDISPLAY(gdk_display_get_default()), key, 0, 0);
-            if (keysym == 0 || keysym == NoSymbol)
-            {
-                keytext = g_strdup_printf("#%d", key);
-            } else {
-                keytext = g_strdup(XKeysymToString(keysym));
-            }
-        }
-        if (type == TYPE_MOUSE)
-        {
-            keytext = g_strdup_printf("Button%d", key);
-        }
-
-        for (i = 0, j=0; j<7; j++)
-        {
-            if (mask & modifiers[j])
-                 strings[i++] = modifier_string[j];
-        }
-        if (key != 0) strings[i++] = keytext;
-        strings[i] = nullptr;
-
-        text = g_strjoinv(" + ", (char **)strings);
-        g_free(keytext);
-    }
-
-    gtk_entry_set_text(GTK_ENTRY(entry), text);
-    gtk_editable_set_position(GTK_EDITABLE(entry), -1);
-    if (text) g_free(text);
+//    if (key == 0 && mask == 0)
+//    {
+//        text = g_strdup(_("(none)"));
+//    } else {
+//        static const char *modifier_string[] = { "Control", "Shift", "Alt", "Mod2", "Mod3", "Super", "Mod5" };
+//        static const unsigned int modifiers[] = { ControlMask, ShiftMask, Mod1Mask, Mod2Mask, Mod3Mask, Mod4Mask, Mod5Mask };
+//        const char *strings[9];
+//        char *keytext = nullptr;
+//        int i, j;
+//        if (type == TYPE_KEY)
+//        {
+//            KeySym keysym;
+//            keysym = XkbKeycodeToKeysym(GDK_DISPLAY_XDISPLAY(gdk_display_get_default()), key, 0, 0);
+//            if (keysym == 0 || keysym == NoSymbol)
+//            {
+//                keytext = g_strdup_printf("#%d", key);
+//            } else {
+//                keytext = g_strdup(XKeysymToString(keysym));
+//            }
+//        }
+//        if (type == TYPE_MOUSE)
+//        {
+//            keytext = g_strdup_printf("Button%d", key);
+//        }
+//
+//        for (i = 0, j=0; j<7; j++)
+//        {
+//            if (mask & modifiers[j])
+//                 strings[i++] = modifier_string[j];
+//        }
+//        if (key != 0) strings[i++] = keytext;
+//        strings[i] = nullptr;
+//
+//        text = g_strjoinv(" + ", (char **)strings);
+//        g_free(keytext);
+//    }
+//
+//    gtk_entry_set_text(GTK_ENTRY(entry), text);
+//    gtk_editable_set_position(GTK_EDITABLE(entry), -1);
+//    if (text) g_free(text);
 }
 
 static gboolean
@@ -145,49 +145,49 @@ on_entry_key_press_event(GtkWidget * widget,
                          GdkEventKey * event,
                          void * user_data)
 {
-    KeyControls *controls = (KeyControls*) user_data;
-    int is_mod;
-    int mod;
-
-    if (event->keyval == GDK_Tab) return false;
-    if (event->keyval == GDK_Escape && ((event->state & ~GDK_LOCK_MASK) == 0)) return false;
-    if (event->keyval == GDK_Return && ((event->state & ~GDK_LOCK_MASK) == 0)) return false;
-    if (event->keyval == GDK_ISO_Left_Tab)
-    {
-        set_keytext(controls->keytext, controls->hotkey.key, controls->hotkey.mask, controls->hotkey.type);
-        return false;
-    }
-    if (event->keyval == GDK_Up && ((event->state & ~GDK_LOCK_MASK) == 0)) return false;
-    if (event->keyval == GDK_Down && ((event->state & ~GDK_LOCK_MASK) == 0)) return false;
-
-    mod = 0;
-    is_mod = 0;
-
-    if ((event->state & GDK_CONTROL_MASK) | (!is_mod && (is_mod = (event->keyval == GDK_Control_L || event->keyval == GDK_Control_R))))
-            mod |= ControlMask;
-
-    if ((event->state & GDK_MOD1_MASK) | (!is_mod && (is_mod = (event->keyval == GDK_Alt_L || event->keyval == GDK_Alt_R))))
-            mod |= Mod1Mask;
-
-    if ((event->state & GDK_SHIFT_MASK) | (!is_mod && (is_mod = (event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R))))
-            mod |= ShiftMask;
-
-    if ((event->state & GDK_MOD5_MASK) | (!is_mod && (is_mod = (event->keyval == GDK_ISO_Level3_Shift))))
-            mod |= Mod5Mask;
-
-    if ((event->state & GDK_MOD4_MASK) | (!is_mod && (is_mod = (event->keyval == GDK_Super_L || event->keyval == GDK_Super_R))))
-            mod |= Mod4Mask;
-
-    if (!is_mod) {
-        controls->hotkey.key = event->hardware_keycode;
-        controls->hotkey.mask = mod;
-        controls->hotkey.type = TYPE_KEY;
-        if (controls->next == nullptr)
-            add_callback (nullptr, (void *) controls);
-        else gtk_widget_grab_focus(GTK_WIDGET(controls->next->keytext));
-    }
-
-    set_keytext(controls->keytext, is_mod ? 0 : event->hardware_keycode, mod, TYPE_KEY);
+//    KeyControls *controls = (KeyControls*) user_data;
+//    int is_mod;
+//    int mod;
+//
+//    if (event->keyval == GDK_Tab) return false;
+//    if (event->keyval == GDK_Escape && ((event->state & ~GDK_LOCK_MASK) == 0)) return false;
+//    if (event->keyval == GDK_Return && ((event->state & ~GDK_LOCK_MASK) == 0)) return false;
+//    if (event->keyval == GDK_ISO_Left_Tab)
+//    {
+//        set_keytext(controls->keytext, controls->hotkey.key, controls->hotkey.mask, controls->hotkey.type);
+//        return false;
+//    }
+//    if (event->keyval == GDK_Up && ((event->state & ~GDK_LOCK_MASK) == 0)) return false;
+//    if (event->keyval == GDK_Down && ((event->state & ~GDK_LOCK_MASK) == 0)) return false;
+//
+//    mod = 0;
+//    is_mod = 0;
+//
+//    if ((event->state & GDK_CONTROL_MASK) | (!is_mod && (is_mod = (event->keyval == GDK_Control_L || event->keyval == GDK_Control_R))))
+//            mod |= ControlMask;
+//
+//    if ((event->state & GDK_MOD1_MASK) | (!is_mod && (is_mod = (event->keyval == GDK_Alt_L || event->keyval == GDK_Alt_R))))
+//            mod |= Mod1Mask;
+//
+//    if ((event->state & GDK_SHIFT_MASK) | (!is_mod && (is_mod = (event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R))))
+//            mod |= ShiftMask;
+//
+//    if ((event->state & GDK_MOD5_MASK) | (!is_mod && (is_mod = (event->keyval == GDK_ISO_Level3_Shift))))
+//            mod |= Mod5Mask;
+//
+//    if ((event->state & GDK_MOD4_MASK) | (!is_mod && (is_mod = (event->keyval == GDK_Super_L || event->keyval == GDK_Super_R))))
+//            mod |= Mod4Mask;
+//
+//    if (!is_mod) {
+//        controls->hotkey.key = event->hardware_keycode;
+//        controls->hotkey.mask = mod;
+//        controls->hotkey.type = TYPE_KEY;
+//        if (controls->next == nullptr)
+//            add_callback (nullptr, (void *) controls);
+//        else gtk_widget_grab_focus(GTK_WIDGET(controls->next->keytext));
+//    }
+//
+//    set_keytext(controls->keytext, is_mod ? 0 : event->hardware_keycode, mod, TYPE_KEY);
     return true;
 }
 
