@@ -7,6 +7,7 @@
 #endif
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
+#include <iostream>
 
 DCustomLogger d_cl;
 
@@ -22,8 +23,12 @@ DCustomLogger::DCustomLogger()
     : log_fn_(
           ("d_audlog" + msw::helpers::format_current_time("%d.%m.%y") + ".txt")
               .c_str()),
-      filt_allowed_files_({"plugin.cc", "plugin.h", "gui.cc"}),
-      filt_forbidden_files_({"probe-buffer.cc", "ffaudio-core.cc"})
+      filt_allowed_files_(mkvec({"plugin.cc", "plugin.h", "gui.cc"})),
+      filt_forbidden_files_(mkvec({"probe-buffer.cc",
+                             "ffaudio-core.cc",
+                             "interface.cc",
+                             "plugin-load.cc",
+                             "vfs.cc", "probe.cc", "output.cc"}))
 {
 }
 bool DCustomLogger::filter(audlog::Level level, const char * file, int line,
@@ -31,7 +36,7 @@ bool DCustomLogger::filter(audlog::Level level, const char * file, int line,
 {
     if (std::find(std::begin(d_cl.filt_forbidden_files_),
                   std::end(d_cl.filt_forbidden_files_),
-                  func) != std::end(d_cl.filt_forbidden_files_))
+                  file) != std::end(d_cl.filt_forbidden_files_))
     {
         return false;
     }
@@ -41,7 +46,7 @@ bool DCustomLogger::filter(audlog::Level level, const char * file, int line,
     }
     if (std::find(std::begin(d_cl.filt_allowed_files_),
                   std::end(d_cl.filt_allowed_files_),
-                  func) == std::end(d_cl.filt_allowed_files_))
+                  file) == std::end(d_cl.filt_allowed_files_))
     {
         return false;
     }
@@ -54,7 +59,7 @@ void DCustomLogger::output(audlog::Level level, const char * file, int line,
     QTextStream oss(&str);
     oss << msw::helpers::current_time_with_ms().c_str() << " "
         << get_level_name(level) << ' ' << file << ':' << line << " [" << func
-        << "]: " << message;
+        << "]: " << message << '\n';
     // QString str{  QString::fromUtf8(result.c_str()) };
 #ifdef _WIN32
     OutputDebugStringW(str.toStdWString().c_str());
@@ -70,7 +75,16 @@ void DCustomLogger::add_file_filt(const char * const file)
 {
     d_cl.filt_allowed_files_.emplace_back(file);
 }
-DCustomLogger::~DCustomLogger() { audlog::unsubscribe(&DCustomLogger::go); }
+std::vector<DCustomLogger::CompareFile>
+DCustomLogger::mkvec(std::initializer_list<std::string> il)
+{
+    std::vector<CompareFile> mkvec_out;
+    mkvec_out.reserve(il.size());
+    std::transform(il.begin(), il.end(), std::back_inserter(mkvec_out),
+                   [](std::string str) { return std::move(str); });
+    return mkvec_out;
+}
+
 bool DCustomLogger::CompareFile::operator==(
     const DCustomLogger::CompareFile & rhs) const
 {
@@ -82,3 +96,12 @@ bool DCustomLogger::CompareFile::operator!=(
     return !(rhs == *this);
 }
 DCustomLogger::CompareFile::CompareFile(std::string fn) : fn_(std::move(fn)) {}
+bool DCustomLogger::CompareFile::operator==(const std::string & rhs) const
+{
+    // std::cout << "cmp " << this->fn_ << " with (str) " << rhs << " result is " <<  (rhs.find(fn_) != std::string::npos) << std::endl;
+    return (rhs.find(fn_) != std::string::npos);
+}
+bool DCustomLogger::CompareFile::operator!=(const std::string & rhs) const
+{
+    return !(*this == rhs);
+}

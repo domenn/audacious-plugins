@@ -80,6 +80,8 @@ static const QMap<Event, const char *> event_desc = {
 
 KeyControls::~KeyControls()
 {
+    AUDDBG("KeyControls %s falling", keytext->keySequence().toString().toStdString().c_str());
+
     delete combobox;
     delete keytext;
     delete button;
@@ -102,6 +104,11 @@ PrefWidget::PrefWidget(QWidget * parent)
                                  audqt::translate_str("_Add"), this)),
       add_button_layout(new QHBoxLayout)
 {
+  main_widget_layout->setObjectName("Main widget vbox layout");
+    connect(main_widget_layout, &QVBoxLayout::destroyed, [](QObject* who){
+      auto* different = dynamic_cast<QVBoxLayout*>(who);
+          AUDDBG("Grid is falling. %d children. Type %s and name %s;; Casted: %d", who->children().size(), who->metaObject()->className(), who->objectName().toStdString().c_str(), different != nullptr);
+    });
     int icon_size =
         QApplication::style()->pixelMetric(QStyle::PM_MessageBoxIconSize);
     information_pixmap->setPixmap(
@@ -169,13 +176,15 @@ void PrefWidget::add_event_control(const HotkeyConfiguration * hotkey)
     if (hotkey != nullptr)
     {
         control->combobox->setCurrentIndex(static_cast<int>(hotkey->event));
+        control->keytext =
+            new QKeySequenceEdit(hotkey->q_hotkey->shortcut(), group_box);
     }
-    //
-    control->keytext = new QKeySequenceEdit(group_box);
-    control->keytext->setFocus(Qt::OtherFocusReason);
-    control->q_hotkey = new QHotkey(this);
+    else
+    {
+        control->keytext = new QKeySequenceEdit(group_box);
+    }
 
-    control->q_hotkey->setRegistered(true);
+    control->keytext->setFocus(Qt::OtherFocusReason);
 
     control->button = new QToolButton(group_box);
     control->button->setIcon(audqt::get_icon("edit-delete"));
@@ -213,13 +222,13 @@ void PrefWidget::ok_callback()
                     std::begin(last_instance->controls_list),
                     std::end(last_instance->controls_list),
                     std::back_inserter(insert_here), [](KeyControls * control) {
-                        auto * ptr_key = control->q_hotkey;
-                        AUDDBG(
-                            "Transfer CFG from GUI to non-GUI for %s %s",
-                            ptr_key->shortcut().toString().toStdString().data(),
-                            get_event_name(control->the_event));
-                        control->q_hotkey = nullptr;
-                        return HotkeyConfiguration(ptr_key, control->the_event);
+                        const auto & ptr_key = control->keytext->keySequence();
+                        auto ev = static_cast<Event>(
+                            control->combobox->currentIndex());
+                        AUDDBG("Transfer CFG from GUI to non-GUI for %s %s",
+                               ptr_key.toString().toStdString().data(),
+                               get_event_name(ev));
+                        return HotkeyConfiguration(new QHotkey(ptr_key), ev);
                     });
             });
         save_config();

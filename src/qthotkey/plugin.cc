@@ -303,20 +303,6 @@ bool handle_keyevent(Event event)
     return false;
 }
 
-void add_hotkey(QList<HotkeyConfiguration> & hotkeys_list, Qt::Key key,
-                Qt::KeyboardModifiers modifiers, Event key_event)
-{
-    hotkeys_list.push_back({new QHotkey(key, modifiers), key_event});
-}
-
-void add_hotkey(QList<HotkeyConfiguration> & hotkeys_list, QKeySequence seq,
-                Event key_event)
-{
-    hotkeys_list.push_back({new QHotkey(), key_event});
-
-    hotkeys_list.back().q_hotkey->setShortcut(std::move(seq));
-}
-
 void load_defaults()
 {
     //    add_hotkey(plugin_cfg.hotkeys_list, Qt::Key_P,
@@ -374,12 +360,17 @@ void load_config()
                        get_event_name(the_event),
                        hotkey->shortcut().toString().toStdString().c_str());
 
-                QObject::connect(
-                    hotkey, &QHotkey::destroyed, [](QObject * key) {
-                        AUDDBG(
-                            "destroying %s"); //,
-//                            key->shortcut().toString().toStdString().c_str());
-                    });
+//                QObject::connect(hotkey, &QHotkey::destroyed,
+//                                 [](QObject * key) {
+//                                     auto * inst = dynamic_cast<QHotkey *>(key);
+//                                     key->dumpObjectInfo();
+//                                     AUDDBG("destroying %s %s", key->objectName().toStdString().c_str() ,
+//                                            inst != nullptr ? inst->shortcut()
+//                                                                  .toString()
+//                                                                  .toStdString()
+//                                                                  .c_str()
+//                                                            : "NONE");
+//                                 });
 
                 list.append(HotkeyConfiguration(hotkey, the_event));
             }
@@ -400,7 +391,10 @@ void save_config()
         if (hotkey.q_hotkey != nullptr)
         {
             aud_set_int("globalHotkey",
-                        QString::fromLatin1("Hotkey_%1_key").arg(max).toLocal8Bit().data(),
+                        QString::fromLatin1("Hotkey_%1_key")
+                            .arg(max)
+                            .toLocal8Bit()
+                            .data(),
                         hotkey.q_hotkey->keyCode());
             aud_set_int("globalHotkey",
                         QString::fromLatin1("Hotkey_%1_mask")
@@ -478,6 +472,7 @@ void GlobalHotkeys::cleanup()
 {
     ungrab_keys();
     HotkeyConfiguration::clear_configured_hotkeys();
+    audlog::unsubscribe(&DCustomLogger::go);
 
     audqt::cleanup();
 }
@@ -486,7 +481,12 @@ HotkeyConfiguration::HotkeyConfiguration(QHotkey * qHotkey, Event event)
     : q_hotkey(qHotkey), event(event)
 {
 }
-void HotkeyConfiguration::clear_configured_hotkeys() { hotkeys_list.clear(); }
+void HotkeyConfiguration::clear_configured_hotkeys()
+{
+    std::for_each(hotkeys_list.begin(), hotkeys_list.end(),
+                  [](HotkeyConfiguration & conf) { delete conf.q_hotkey; });
+    hotkeys_list.clear();
+}
 void HotkeyConfiguration::replace(
     std::function<void(QList<HotkeyConfiguration> &)> p_function)
 {

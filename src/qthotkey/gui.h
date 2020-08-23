@@ -30,9 +30,6 @@ struct KeyControls
     QKeySequenceEdit * keytext;
     QToolButton * button;
 
-    Event the_event;
-    QHotkey * q_hotkey;
-
     ~KeyControls();
 };
 

@@ -12,6 +12,8 @@ class DCustomLogger
 
     public:
         bool operator==(const CompareFile & rhs) const;
+        bool operator==(const std::string & rhs) const;
+        bool operator!=(const std::string & rhs) const;
         bool operator!=(const CompareFile & rhs) const;
 
         CompareFile(std::string fn); // NOLINT(google-explicit-constructor)
@@ -19,13 +21,13 @@ class DCustomLogger
 
 
     QString log_fn_;
-    std::vector<std::string> filt_allowed_files_;
-    std::vector<std::string> filt_forbidden_files_;
+    std::vector<CompareFile> filt_allowed_files_;
+    std::vector<CompareFile> filt_forbidden_files_;
+
+    static std::vector<CompareFile> mkvec(std::initializer_list<std::string> il);
 
 public:
     DCustomLogger();
-
-    virtual ~DCustomLogger();
 
     static void go(audlog::Level level, const char * file, int line,
                    const char * func, const char * message);
