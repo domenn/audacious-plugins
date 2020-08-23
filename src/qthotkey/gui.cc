@@ -49,6 +49,7 @@
 
 #include <libaudcore/i18n.h>
 #include <libaudcore/preferences.h>
+#include <libaudcore/runtime.h>
 #include <libaudcore/templates.h>
 #include <libaudqt/libaudqt.h>
 
@@ -119,7 +120,7 @@ PrefWidget::PrefWidget(QWidget * parent)
     group_box_layout->addWidget(action_label, 0, 0);
     group_box_layout->addWidget(key_binding_label, 0, 1);
 
-    for (const auto & hotkey : get_config()->hotkeys_list)
+    for (const auto & hotkey : HotkeyConfiguration::get_configured_hotkeys())
     {
         add_event_control(&hotkey);
     }
@@ -172,9 +173,9 @@ void PrefWidget::add_event_control(const HotkeyConfiguration * hotkey)
     //
     control->keytext = new QKeySequenceEdit(group_box);
     control->keytext->setFocus(Qt::OtherFocusReason);
-    control->hotkey.q_hotkey = new QHotkey(this);
+    control->q_hotkey = new QHotkey(this);
 
-    control->hotkey.q_hotkey->setRegistered(true);
+    control->q_hotkey->setRegistered(true);
 
     control->button = new QToolButton(group_box);
     control->button->setIcon(audqt::get_icon("edit-delete"));
@@ -193,20 +194,6 @@ void PrefWidget::add_event_control(const HotkeyConfiguration * hotkey)
     });
 }
 
-QList<HotkeyConfiguration> PrefWidget::getConfig() const
-{
-    QList<HotkeyConfiguration> result;
-
-    for (const auto & control : controls_list)
-    {
-        add_hotkey(result, control->keytext->keySequence(),
-                   static_cast<GlobalHotkeys::Event>(
-                       control->combobox->currentIndex()));
-    }
-
-    return result;
-}
-
 void * PrefWidget::make_config_widget()
 {
     ungrab_keys();
@@ -220,8 +207,21 @@ void PrefWidget::ok_callback()
 {
     if (last_instance != nullptr)
     {
-        PluginConfig * plugin_cfg = get_config();
-        plugin_cfg->hotkeys_list = last_instance->getConfig();
+        HotkeyConfiguration::replace(
+            [](QList<HotkeyConfiguration> & insert_here) {
+                std::transform(
+                    std::begin(last_instance->controls_list),
+                    std::end(last_instance->controls_list),
+                    std::back_inserter(insert_here), [](KeyControls * control) {
+                        auto * ptr_key = control->q_hotkey;
+                        AUDDBG(
+                            "Transfer CFG from GUI to non-GUI for %s %s",
+                            ptr_key->shortcut().toString().toStdString().data(),
+                            get_event_name(control->the_event));
+                        control->q_hotkey = nullptr;
+                        return HotkeyConfiguration(ptr_key, control->the_event);
+                    });
+            });
         save_config();
     }
 }

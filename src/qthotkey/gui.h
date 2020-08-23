@@ -30,7 +30,8 @@ struct KeyControls
     QKeySequenceEdit * keytext;
     QToolButton * button;
 
-    HotkeyConfiguration hotkey;
+    Event the_event;
+    QHotkey * q_hotkey;
 
     ~KeyControls();
 };
@@ -40,8 +41,6 @@ class PrefWidget : public QWidget
 public:
     explicit PrefWidget(QWidget * parent = nullptr);
     ~PrefWidget();
-
-    QList<HotkeyConfiguration> getConfig() const;
 
     static void * make_config_widget();
     static void ok_callback();
