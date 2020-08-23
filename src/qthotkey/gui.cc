@@ -50,7 +50,6 @@
 #include <libaudcore/i18n.h>
 #include <libaudcore/preferences.h>
 #include <libaudcore/templates.h>
-
 #include <libaudqt/libaudqt.h>
 
 namespace GlobalHotkeys
@@ -100,7 +99,7 @@ PrefWidget::PrefWidget(QWidget * parent)
           new QLabel(audqt::translate_str("<b>Key Binding:</b>"), group_box)),
       add_button(new QPushButton(audqt::get_icon("list-add"),
                                  audqt::translate_str("_Add"), this)),
-      add_button_layout(new QHBoxLayout), signal_mapper(new QSignalMapper(this))
+      add_button_layout(new QHBoxLayout)
 {
     int icon_size =
         QApplication::style()->pixelMetric(QStyle::PM_MessageBoxIconSize);
@@ -136,12 +135,6 @@ PrefWidget::PrefWidget(QWidget * parent)
 
     QObject::connect(add_button, &QPushButton::clicked,
                      [this]() { add_event_control(nullptr); });
-
-    connect(signal_mapper, &QSignalMapper::mappedInt, this,
-            [this](int mapped_int) {
-                handle_keyevent(static_cast<Event>(mapped_int));
-            });
-
     last_instance = this;
 }
 
@@ -165,27 +158,8 @@ PrefWidget::~PrefWidget()
 void PrefWidget::add_event_control(const HotkeyConfiguration * hotkey)
 {
     KeyControls * control = new KeyControls;
-
-    //	if (hotkey != nullptr)
-    //	{
-    //		control->hotkey.key = hotkey->key;
-    //		control->hotkey.mask = hotkey->mask;
-    //		control->hotkey.event = hotkey->event;
-    //
-    //		if (control->hotkey.key == 0)
-    //		{
-    //			control->hotkey.mask = 0;
-    //		}
-    //	}
-    //	else
-    //	{
-    //		control->hotkey.key = 0;
-    //		control->hotkey.mask = 0;
-    //		control->hotkey.event = static_cast<Event>(0);
-    //	}
-    //
     control->combobox = new QComboBox(group_box);
-    //
+
     for (const auto & desc_item : event_desc)
     {
         control->combobox->addItem(audqt::translate_str(desc_item));
@@ -201,16 +175,7 @@ void PrefWidget::add_event_control(const HotkeyConfiguration * hotkey)
     control->hotkey.q_hotkey = new QHotkey(this);
 
     control->hotkey.q_hotkey->setRegistered(true);
-    connect(control->hotkey.q_hotkey, &QHotkey::activated, signal_mapper,
-            &QSignalMapper::map);
-    signal_mapper->setMapping(control->hotkey.q_hotkey,
-                              static_cast<int>(control->hotkey.event));
-    //
-    //	if (hotkey != nullptr)
-    //	{
-    //		control->keytext->set_keytext(hotkey->key, hotkey->mask);
-    //	}
-    //
+
     control->button = new QToolButton(group_box);
     control->button->setIcon(audqt::get_icon("edit-delete"));
 
@@ -234,13 +199,9 @@ QList<HotkeyConfiguration> PrefWidget::getConfig() const
 
     for (const auto & control : controls_list)
     {
-        HotkeyConfiguration hotkey;
-        //
-        //		hotkey.key = control->hotkey.key;
-        //		hotkey.mask = control->hotkey.mask;
-        hotkey.event = static_cast<Event>(control->combobox->currentIndex());
-
-        result.push_back(hotkey);
+        add_hotkey(result, control->keytext->keySequence(),
+                   static_cast<GlobalHotkeys::Event>(
+                       control->combobox->currentIndex()));
     }
 
     return result;
@@ -265,10 +226,7 @@ void PrefWidget::ok_callback()
     }
 }
 
-void PrefWidget::destroy_callback()
-{
-    // grab_keys();
-}
+void PrefWidget::destroy_callback() { grab_keys(); }
 
 static const PreferencesWidget hotkey_widgets[] = {
     WidgetCustomQt(PrefWidget::make_config_widget)};
@@ -278,6 +236,7 @@ const PluginPreferences hotkey_prefs = {{hotkey_widgets},
                                         PrefWidget::ok_callback,
                                         PrefWidget::destroy_callback};
 
+const char * get_event_name(Event the_event) { return event_desc[the_event]; }
 } /* namespace GlobalHotkeys */
 
 /*

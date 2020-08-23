@@ -2,6 +2,7 @@
 #define _PLUGIN_H_INCLUDED_
 
 #include <QtCore/QList>
+#include <QtCore>
 
 class QHotkey;
 
@@ -58,6 +59,11 @@ bool handle_keyevent(Event event);
 
 void grab_keys();
 void ungrab_keys();
+
+void add_hotkey(QList<HotkeyConfiguration> & hotkeys_list, Qt::Key key,
+                QFlags<Qt::KeyboardModifier> modifiers, Event key_event);
+void add_hotkey(QList<HotkeyConfiguration> & hotkeys_list, QKeySequence seq,
+                Event key_event);
 
 } /* namespace GlobalHotkeys */
 

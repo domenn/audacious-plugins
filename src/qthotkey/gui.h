@@ -47,8 +47,9 @@ public:
     static void ok_callback();
     static void destroy_callback();
 
-private:
     QVBoxLayout * main_widget_layout;
+
+private:
     QLabel * information_pixmap;
     QLabel * information_label;
     QHBoxLayout * information_layout;
@@ -58,13 +59,13 @@ private:
     QLabel * key_binding_label;
     QPushButton * add_button;
     QHBoxLayout * add_button_layout;
-    QSignalMapper * signal_mapper;
 
     QList<KeyControls *> controls_list;
 
     void add_event_control(const HotkeyConfiguration * hotkey);
 };
 
+const char * get_event_name(Event the_event);
 } /* namespace GlobalHotkeys */
 
 #endif

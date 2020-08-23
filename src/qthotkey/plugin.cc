@@ -107,7 +107,7 @@ bool handle_keyevent(Event event)
     int current_volume, old_volume;
     static int volume_static = 0;
     bool mute;
-
+    AUDINFO("Handling the %s", get_event_name(event));
     /* get current volume */
     current_volume = aud_drct_get_volume_main();
     old_volume = current_volume;
@@ -312,43 +312,35 @@ bool handle_keyevent(Event event)
     return false;
 }
 
-void add_hotkey(QList<HotkeyConfiguration> & hotkeys_list, Event event)
+void add_hotkey(QList<HotkeyConfiguration> & hotkeys_list, Qt::Key key,
+                Qt::KeyboardModifiers modifiers, Event key_event)
 {
-    AUDINFO("Hey! Adding one! %d", event);
-    // 	KeyCode keycode;
-    //	HotkeyConfiguration hotkey;
-    //
-    //	if (keysym == 0)
-    //	{
-    //		return;
-    //	}
-    //
-    //	keycode = XKeysymToKeycode(QX11Info::display(), keysym);
-    //	if (keycode == 0)
-    //	{
-    //		return;
-    //	}
-    //
-    //	hotkey.key = static_cast<int>(keycode);
-    //	hotkey.mask = mask;
-    //	hotkey.event = event;
-    //
-    //	hotkeys_list.push_back(hotkey);
+    hotkeys_list.push_back({new QHotkey(key, modifiers), key_event});
+}
+
+void add_hotkey(QList<HotkeyConfiguration> & hotkeys_list, QKeySequence seq,
+                Event key_event)
+{
+    hotkeys_list.push_back({new QHotkey(), key_event});
+
+    hotkeys_list.back().q_hotkey->setShortcut(std::move(seq));
 }
 
 void load_defaults()
 {
-    //	add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioPrev, 0,
-    // Event::PrevTrack); 	add_hotkey(plugin_cfg.hotkeys_list,
-    // XF86XK_AudioPlay, 0, Event::Play);
-    // add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioPause, 0, Event::Pause);
-    // add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioStop, 0, Event::Stop);
-    // add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioNext, 0,
-    // Event::NextTrack); 	add_hotkey(plugin_cfg.hotkeys_list,
-    // XF86XK_AudioMute, 0, Event::Mute);
-    // add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioRaiseVolume, 0,
-    // Event::VolumeUp); 	add_hotkey(plugin_cfg.hotkeys_list,
-    //XF86XK_AudioLowerVolume, 0, Event::VolumeDown);
+    add_hotkey(plugin_cfg.hotkeys_list, Qt::Key_P,
+               Qt::KeyboardModifier::AltModifier |
+                   Qt::KeyboardModifier::ShiftModifier,
+               Event::PrevTrack);
+    //	add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioPlay, 0, Event::Play);
+    //	add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioPause, 0, Event::Pause);
+    //	add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioStop, 0, Event::Stop);
+    //	add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioNext, 0,
+    //Event::NextTrack); 	add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioMute,
+    //0, Event::Mute); 	add_hotkey(plugin_cfg.hotkeys_list,
+    //XF86XK_AudioRaiseVolume, 0, Event::VolumeUp);
+    //	add_hotkey(plugin_cfg.hotkeys_list, XF86XK_AudioLowerVolume, 0,
+    //Event::VolumeDown);
 }
 
 /* load plugin configuration */
@@ -359,23 +351,32 @@ void load_config()
     {
         load_defaults();
     }
-    //	else
-    //	{
-    //		for (int i = 0; i < max; ++i)
-    //		{
-    //			HotkeyConfiguration hotkey;
-    //
-    //			hotkey.key = aud_get_int("globalHotkey",
-    // QString::fromLatin1("Hotkey_%1_key").arg(i).toLocal8Bit().data());
-    //			hotkey.mask = aud_get_int("globalHotkey",
-    // QString::fromLatin1("Hotkey_%1_mask").arg(i).toLocal8Bit().data());
-    //			hotkey.event =
-    //static_cast<Event>(aud_get_int("globalHotkey",
-    // QString::fromLatin1("Hotkey_%1_event").arg(i).toLocal8Bit().data()));
-    //
-    //			plugin_cfg.hotkeys_list.push_back(hotkey);
-    //		}
-    //	}
+    else
+    {
+        for (int i = 0; i < max; ++i)
+        {
+            HotkeyConfiguration hotkey;
+            hotkey.q_hotkey = new QHotkey(
+                static_cast<Qt::Key>(aud_get_int(
+                    "globalHotkey", QString::fromLatin1("Hotkey_%1_key")
+                                        .arg(i)
+                                        .toLocal8Bit()
+                                        .data())),
+                static_cast<Qt::KeyboardModifiers>(aud_get_int(
+                    "globalHotkey", QString::fromLatin1("Hotkey_%1_mask")
+                                        .arg(i)
+                                        .toLocal8Bit()
+                                        .data())));
+
+            hotkey.event = static_cast<Event>(aud_get_int(
+                "globalHotkey", QString::fromLatin1("Hotkey_%1_event")
+                                    .arg(i)
+                                    .toLocal8Bit()
+                                    .data()));
+
+            plugin_cfg.hotkeys_list.push_back(hotkey);
+        }
+    }
 }
 
 /* save plugin configuration */
@@ -383,33 +384,79 @@ void save_config()
 {
     int max = 0;
 
-    //	for (const auto &hotkey: plugin_cfg.hotkeys_list)
-    //	{
-    //		if (hotkey.key != 0)
-    //		{
-    //			aud_set_int("globalHotkey",
-    // QString::fromLatin1("Hotkey_%1_key").arg(max).toLocal8Bit().data(),
-    // hotkey.key); 			aud_set_int("globalHotkey",
-    // QString::fromLatin1("Hotkey_%1_mask").arg(max).toLocal8Bit().data(),
-    // hotkey.mask); 			aud_set_int("globalHotkey",
-    // QString::fromLatin1("Hotkey_%1_event").arg(max).toLocal8Bit().data(),
-    // static_cast<int>(hotkey.event));
-    //			++max;
-    //		}
-    //	}
+    for (const auto & hotkey : plugin_cfg.hotkeys_list)
+    {
+        if (hotkey.q_hotkey != nullptr)
+        {
+            aud_set_int("globalHotkey",
+                        QString::fromLatin1("Hotkey_%1_key")
+                            .arg(max)
+                            .toLocal8Bit()
+                            .data(),
+                        hotkey.q_hotkey->keyCode());
+            aud_set_int("globalHotkey",
+                        QString::fromLatin1("Hotkey_%1_mask")
+                            .arg(max)
+                            .toLocal8Bit()
+                            .data(),
+                        hotkey.q_hotkey->modifiers());
+            aud_set_int("globalHotkey",
+                        QString::fromLatin1("Hotkey_%1_event")
+                            .arg(max)
+                            .toLocal8Bit()
+                            .data(),
+                        static_cast<int>(hotkey.event));
+            ++max;
+        }
+    }
 
     aud_set_int("globalHotkey", "NumHotkeys", max);
 }
-void grab_keys() {}
-void ungrab_keys() {}
+
+std::vector<QMetaObject::Connection> connections;
+
+void grab_keys()
+{
+    PluginConfig * plugin_cfg = get_config();
+
+    for (auto & hk : plugin_cfg->hotkeys_list)
+    {
+        connections.emplace_back(QObject::connect(
+            hk.q_hotkey, &QHotkey::activated,
+            [capture_event{hk.event}]() { handle_keyevent(capture_event); }));
+        AUDINFO("Registering %s and %s to %s",
+                QKeySequence(hk.q_hotkey->keyCode())
+                    .toString()
+                    .toStdString()
+                    .c_str(),
+                QKeySequence(hk.q_hotkey->modifiers())
+                    .toString()
+                    .toStdString()
+                    .c_str(),
+                get_event_name(hk.event));
+        hk.q_hotkey->setRegistered(true);
+    }
+}
+void ungrab_keys()
+{
+    for (auto & c : connections)
+    {
+        QObject::disconnect(c);
+    }
+    connections.clear();
+    PluginConfig * plugin_cfg = get_config();
+
+    for (auto & hk : plugin_cfg->hotkeys_list)
+    {
+        hk.q_hotkey->setRegistered(false);
+    }
+}
 
 GlobalHotkeys::GlobalHotkeys() : GeneralPlugin(info, false) {}
 
 bool GlobalHotkeys::init()
 {
     audqt::init();
-
-    // aa
 
     load_config();
     grab_keys();
@@ -450,8 +497,8 @@ bool GlobalHotkeys::nativeEventFilter(const QByteArray & eventType,
     //	for (const auto &hotkey: plugin_cfg.hotkeys_list)
     //	{
     //		if ((hotkey.key == ke->detail)
-    //			&& (hotkey.mask == (ke->state & ~(scrolllock_mask | numlock_mask
-    //| capslock_mask))))
+    //			&& (hotkey.mask == (ke->state & ~(scrolllock_mask | numlock_mask |
+    //capslock_mask))))
     //		{
     //			if (handle_keyevent(hotkey.event))
     //			{
