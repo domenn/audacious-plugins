@@ -388,9 +388,14 @@ void save_config()
     {
         if (hotkey.q_hotkey != nullptr)
         {
+            QString testingStr1 = QString::fromLatin1("Hotkey_%1_key")
+                .arg(max);
+
+            AUDINFO("change! %s", testingStr1.toStdString().c_str());
+
+
             aud_set_int("globalHotkey",
-                        QString::fromLatin1("Hotkey_%1_key")
-                            .arg(max)
+                            testingStr1
                             .toLocal8Bit()
                             .data(),
                         hotkey.q_hotkey->keyCode());
@@ -472,42 +477,6 @@ void GlobalHotkeys::cleanup()
     plugin_cfg.hotkeys_list.clear();
 
     audqt::cleanup();
-}
-
-bool GlobalHotkeys::nativeEventFilter(const QByteArray & eventType,
-                                      void * message, long * result)
-{
-    //	Q_UNUSED(eventType);
-    //	Q_UNUSED(result);
-    //
-    //	if (!grabbed)
-    //	{
-    //		return false;
-    //	}
-    //
-    //	xcb_generic_event_t *e = static_cast<xcb_generic_event_t*>(message);
-    //
-    //	if (e->response_type != XCB_KEY_PRESS)
-    //	{
-    //		return false;
-    //	}
-    //
-    //	xcb_key_press_event_t *ke = (xcb_key_press_event_t*)e;
-    //
-    //	for (const auto &hotkey: plugin_cfg.hotkeys_list)
-    //	{
-    //		if ((hotkey.key == ke->detail)
-    //			&& (hotkey.mask == (ke->state & ~(scrolllock_mask | numlock_mask |
-    //capslock_mask))))
-    //		{
-    //			if (handle_keyevent(hotkey.event))
-    //			{
-    //				return true;
-    //			}
-    //		}
-    //	}
-
-    return false;
 }
 
 } /* namespace GlobalHotkeys */
