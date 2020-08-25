@@ -38,7 +38,7 @@
 #include "plugin.h"
 #include "gui.h"
 
-#include "qhotkey.h"
+#include "thirdparty/qhotkey.h"
 #include <QtCore/QAbstractNativeEventFilter>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QString>

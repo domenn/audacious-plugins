@@ -38,7 +38,7 @@
 #include "gui.h"
 #include "plugin.h"
 
-#include "qhotkey.h"
+#include "thirdparty/qhotkey.h"
 #include <QSignalMapper>
 #include <QtCore/QMap>
 #include <QtCore/QStringList>
