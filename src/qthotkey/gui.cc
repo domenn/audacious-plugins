@@ -49,6 +49,7 @@
 
 #include <libaudcore/i18n.h>
 #include <libaudcore/preferences.h>
+#include <libaudcore/runtime.h>
 #include <libaudcore/templates.h>
 #include <libaudqt/libaudqt.h>
 
@@ -79,6 +80,8 @@ static const QMap<Event, const char *> event_desc = {
 
 KeyControls::~KeyControls()
 {
+    AUDDBG("KeyControls %s falling", keytext->keySequence().toString().toStdString().c_str());
+
     delete combobox;
     delete keytext;
     delete button;
@@ -101,6 +104,11 @@ PrefWidget::PrefWidget(QWidget * parent)
                                  audqt::translate_str("_Add"), this)),
       add_button_layout(new QHBoxLayout)
 {
+  main_widget_layout->setObjectName("Main widget vbox layout");
+    connect(main_widget_layout, &QVBoxLayout::destroyed, [](QObject* who){
+      auto* different = dynamic_cast<QVBoxLayout*>(who);
+          AUDDBG("Grid is falling. %d children. Type %s and name %s;; Casted: %d", who->children().size(), who->metaObject()->className(), who->objectName().toStdString().c_str(), different != nullptr);
+    });
     int icon_size =
         QApplication::style()->pixelMetric(QStyle::PM_MessageBoxIconSize);
     information_pixmap->setPixmap(
@@ -119,7 +127,7 @@ PrefWidget::PrefWidget(QWidget * parent)
     group_box_layout->addWidget(action_label, 0, 0);
     group_box_layout->addWidget(key_binding_label, 0, 1);
 
-    for (const auto & hotkey : get_config()->hotkeys_list)
+    for (const auto & hotkey : HotkeyConfiguration::get_configured_hotkeys())
     {
         add_event_control(&hotkey);
     }
@@ -168,13 +176,15 @@ void PrefWidget::add_event_control(const HotkeyConfiguration * hotkey)
     if (hotkey != nullptr)
     {
         control->combobox->setCurrentIndex(static_cast<int>(hotkey->event));
+        control->keytext =
+            new QKeySequenceEdit(hotkey->q_hotkey->shortcut(), group_box);
     }
-    //
-    control->keytext = new QKeySequenceEdit(group_box);
-    control->keytext->setFocus(Qt::OtherFocusReason);
-    control->hotkey.q_hotkey = new QHotkey(this);
+    else
+    {
+        control->keytext = new QKeySequenceEdit(group_box);
+    }
 
-    control->hotkey.q_hotkey->setRegistered(true);
+    control->keytext->setFocus(Qt::OtherFocusReason);
 
     control->button = new QToolButton(group_box);
     control->button->setIcon(audqt::get_icon("edit-delete"));
@@ -193,20 +203,6 @@ void PrefWidget::add_event_control(const HotkeyConfiguration * hotkey)
     });
 }
 
-QList<HotkeyConfiguration> PrefWidget::getConfig() const
-{
-    QList<HotkeyConfiguration> result;
-
-    for (const auto & control : controls_list)
-    {
-        add_hotkey(result, control->keytext->keySequence(),
-                   static_cast<GlobalHotkeys::Event>(
-                       control->combobox->currentIndex()));
-    }
-
-    return result;
-}
-
 void * PrefWidget::make_config_widget()
 {
     ungrab_keys();
@@ -220,8 +216,21 @@ void PrefWidget::ok_callback()
 {
     if (last_instance != nullptr)
     {
-        PluginConfig * plugin_cfg = get_config();
-        plugin_cfg->hotkeys_list = last_instance->getConfig();
+        HotkeyConfiguration::replace(
+            [](QList<HotkeyConfiguration> & insert_here) {
+                std::transform(
+                    std::begin(last_instance->controls_list),
+                    std::end(last_instance->controls_list),
+                    std::back_inserter(insert_here), [](KeyControls * control) {
+                        const auto & ptr_key = control->keytext->keySequence();
+                        auto ev = static_cast<Event>(
+                            control->combobox->currentIndex());
+                        AUDDBG("Transfer CFG from GUI to non-GUI for %s %s",
+                               ptr_key.toString().toStdString().data(),
+                               get_event_name(ev));
+                        return HotkeyConfiguration(new QHotkey(ptr_key), ev);
+                    });
+            });
         save_config();
     }
 }

@@ -3,6 +3,7 @@
 
 #include <QtCore/QList>
 #include <QtCore>
+#include <functional>
 
 class QHotkey;
 
@@ -44,26 +45,28 @@ struct HotkeyConfiguration
 {
     QHotkey * q_hotkey;
     Event event;
-};
 
-struct PluginConfig
-{
-    /* keyboard */
-    QList<HotkeyConfiguration> hotkeys_list;
+    HotkeyConfiguration(QHotkey * qHotkey, Event event);
+
+    static void clear_configured_hotkeys();
+
+    static const QList<HotkeyConfiguration> & get_configured_hotkeys()
+    {
+        return hotkeys_list;
+    }
+
+    static void replace(std::function<void(QList<HotkeyConfiguration> &)> p_function);
+private:
+    static QList<HotkeyConfiguration> hotkeys_list;
 };
 
 void load_config();
 void save_config();
-PluginConfig * get_config();
+
 bool handle_keyevent(Event event);
 
 void grab_keys();
 void ungrab_keys();
-
-void add_hotkey(QList<HotkeyConfiguration> & hotkeys_list, Qt::Key key,
-                QFlags<Qt::KeyboardModifier> modifiers, Event key_event);
-void add_hotkey(QList<HotkeyConfiguration> & hotkeys_list, QKeySequence seq,
-                Event key_event);
 
 } /* namespace GlobalHotkeys */
 
