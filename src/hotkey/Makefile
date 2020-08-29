@@ -1,6 +1,6 @@
 PLUGIN = hotkey${PLUGIN_SUFFIX}
 
-SRCS = plugin.cc gui.cc grab.cc
+SRCS = plugin.cc gui.cc grab.cc x_hotkey.cc hotkey_api_common.cc
 
 include ../../buildsys.mk
 include ../../extra.mk
