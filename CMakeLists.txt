@@ -35,12 +35,12 @@ file(GLOB_RECURSE aud_srcs "./src/*.cpp" "./src/*.hpp" "./src/*.c" "./src/*.cc" 
 add_library(audaciousPlugins ${aud_srcs})
 target_link_libraries(audaciousPlugins Qt5::Core Qt5::Widgets)
 
-set(hotkeyw32src ./src/hotkey/gui.cc ./src/hotkey/plugin.cc ./src/hotkeyw32/w32_hotkey.cc ./src/hotkey/hotkey_api_common.cc
-    ./src/hotkeyw32/res/thumb_icons_map.rc ./src/hotkeyw32/thumb_buttons.cc
-    ../audacious-plugins_simpleAF/src/thirdparty/d_custom_logger.cc
-    )
+#set(hotkeyw32src ./src/hotkey/gui.cc ./src/hotkey/plugin.cc ./src/hotkeyw32/w32_hotkey.cc ./src/hotkey/hotkey_api_common.cc
+#    ./src/hotkeyw32/res/thumb_icons_map.rc ./src/hotkeyw32/thumb_buttons.cc
+#    ../audacious-plugins_simpleAF/src/thirdparty/d_custom_logger.cc
+#    )
 
-
+set(hotkeyw32src ./src/hotkeyw32/plugin.cc ./src/hotkeyw32/plugin.h ./src/hotkeyw32/gui.cc)
 
 add_library(hotkeyw32 SHARED ${hotkeyw32src})
 target_link_libraries(hotkeyw32 audtag audcore audgui ${GTK2_LIBRARIES} Qt5::Core )
