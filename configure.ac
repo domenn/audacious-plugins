@@ -439,6 +439,16 @@ test_songchange () {
     fi
 }
 
+test_hotkeyw32 () {
+    if test $HAVE_MSWINDOWS = yes -a "x$USE_GTK" = "xyes" ; then
+        have_hotkeyw32=yes
+        echo --   HkW32 to yes
+    else
+        have_hotkeyw32=no
+        echo --   HkW32 to no
+    fi
+}
+
 ENABLE_PLUGIN_WITH_TEST(songchange,
     song change plugin,
     auto,
@@ -472,12 +482,22 @@ ENABLE_PLUGIN_WITH_TEST(glspectrum,
     auto,
     VISUALIZATION)
 
-ENABLE_PLUGIN_WITH_DEP(hotkey,
-    global hotkeys (X11),
+ENABLE_PLUGIN_WITH_TEST(hotkeyw32,
+    Windows global hotkeys,
     auto,
-    GENERAL,
-    GDKX11,
-    gdk-x11-2.0)
+    GENERAL)
+
+# For some reason this check errors on windows .. So I guard it out.
+if test $HAVE_MSWINDOWS = no ; then
+    ENABLE_PLUGIN_WITH_DEP(hotkey,
+        global hotkeys (X11),
+        auto,
+        GENERAL,
+        GDKX11,
+        gdk-x11-2.0)
+else
+    have_hotkey=no
+fi
 
 ENABLE_PLUGIN_WITH_DEP(aosd,
     X11 OSD,
@@ -830,6 +850,7 @@ if test "x$USE_GTK" = "xyes" ; then
     echo "  Spectrum Analyzer (2D):                 yes"
     echo "  Status Icon:                            yes"
     echo "  X11 Global Hotkeys:                     $have_hotkey"
+    echo "  Windows Global Hotkeys:                 $have_hotkeyw32"
     echo "  X11 On-Screen Display (aosd):           $have_aosd"
     echo
 fi
