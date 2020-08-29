@@ -33,12 +33,6 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include <stdlib.h>
-
-#include <X11/XF86keysym.h>
-
-#include <gdk/gdk.h>
-#include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
 #include <libaudcore/drct.h>
@@ -51,6 +45,11 @@
 #include "plugin.h"
 #include "gui.h"
 #include "grab.h"
+#include "api_hotkey.h"
+
+#ifdef BUILT_FROM_CMAKE
+#include "../../audacious-plugins_simpleAF/src/thirdparty/d_custom_logger.hpp"
+#endif
 
 class GlobalHotkeys : public GeneralPlugin
 {
@@ -67,14 +66,18 @@ public:
 
     constexpr GlobalHotkeys () : GeneralPlugin (info, false) {}
 
-    bool init ();
-    void cleanup ();
+    bool init () override;
+    void cleanup () override;
 };
 
 EXPORT GlobalHotkeys aud_plugin_instance;
 
+#ifndef _WIN32
 /* global vars */
-static PluginConfig plugin_cfg;
+static
+#else
+PluginConfig plugin_cfg;
+#endif
 
 const char GlobalHotkeys::about[] =
  N_("Global Hotkey Plugin\n"
@@ -97,16 +100,20 @@ PluginConfig* get_config ()
  */
 bool GlobalHotkeys::init ()
 {
+#ifdef BUILT_FROM_CMAKE
+    audlog::subscribe(&DCustomLogger::go, audlog::Level::Debug);
+#endif
     if (! gtk_init_check (nullptr, nullptr))
     {
         AUDERR ("GTK+ initialization failed.\n");
         return false;
     }
-
+#ifdef _WIN32
+  win_init();
+#endif
     setup_filter();
     load_config ( );
-    grab_keys ( );
-
+  grab_keys ();
     return true;
 }
 
@@ -289,47 +296,26 @@ gboolean handle_keyevent (EVENT event)
     return false;
 }
 
-void add_hotkey(HotkeyConfiguration** pphotkey, KeySym keysym, int mask, int type, EVENT event)
-{
-    KeyCode keycode;
-    HotkeyConfiguration *photkey;
-    if (keysym == 0) return;
-    if (pphotkey == nullptr) return;
-    photkey = *pphotkey;
-    if (photkey == nullptr) return;
-    keycode = XKeysymToKeycode(GDK_DISPLAY_XDISPLAY(gdk_display_get_default()), keysym);
-    if (keycode == 0) return;
-    if (photkey->key) {
-        photkey->next = g_new(HotkeyConfiguration, 1);
-        photkey = photkey->next;
-        *pphotkey = photkey;
-        photkey->next = nullptr;
-    }
-    photkey->key = (int)keycode;
-    photkey->mask = mask;
-    photkey->event = event;
-    photkey->type = type;
-}
-
 void load_defaults ()
 {
+  AUDDBG("lHotkeyFlow:Entry, loading defaults.");
     HotkeyConfiguration* hotkey;
 
     hotkey = &(plugin_cfg.first);
 
-    add_hotkey(&hotkey, XF86XK_AudioPrev, 0, TYPE_KEY, EVENT_PREV_TRACK);
-    add_hotkey(&hotkey, XF86XK_AudioPlay, 0, TYPE_KEY, EVENT_PLAY);
-    add_hotkey(&hotkey, XF86XK_AudioPause, 0, TYPE_KEY, EVENT_PAUSE);
-    add_hotkey(&hotkey, XF86XK_AudioStop, 0, TYPE_KEY, EVENT_STOP);
-    add_hotkey(&hotkey, XF86XK_AudioNext, 0, TYPE_KEY, EVENT_NEXT_TRACK);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioPrev, 0, TYPE_KEY, EVENT_PREV_TRACK);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioPlay, 0, TYPE_KEY, EVENT_PLAY);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioPause, 0, TYPE_KEY, EVENT_PAUSE);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioStop, 0, TYPE_KEY, EVENT_STOP);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioNext, 0, TYPE_KEY, EVENT_NEXT_TRACK);
 
-/*    add_hotkey(&hotkey, XF86XK_AudioRewind, 0, TYPE_KEY, EVENT_BACKWARD); */
+/*    add_hotkey(&hotkey, OS_KEY_AudioRewind, 0, TYPE_KEY, EVENT_BACKWARD); */
 
-    add_hotkey(&hotkey, XF86XK_AudioMute, 0, TYPE_KEY, EVENT_MUTE);
-    add_hotkey(&hotkey, XF86XK_AudioRaiseVolume, 0, TYPE_KEY, EVENT_VOL_UP);
-    add_hotkey(&hotkey, XF86XK_AudioLowerVolume, 0, TYPE_KEY, EVENT_VOL_DOWN);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioMute, 0, TYPE_KEY, EVENT_MUTE);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioRaiseVolume, 0, TYPE_KEY, EVENT_VOL_UP);
+  Hotkey::add_hotkey(&hotkey, OS_KEY_AudioLowerVolume, 0, TYPE_KEY, EVENT_VOL_DOWN);
 
-/*    add_hotkey(&hotkey, XF86XK_AudioMedia, 0, TYPE_KEY, EVENT_JUMP_TO_FILE);
+/*    add_hotkey(&hotkey, OS_KEY_AudioMedia, 0, TYPE_KEY, EVENT_JUMP_TO_FILE);
     add_hotkey(&hotkey, XF86XK_Music, 0, TYPE_KEY, EVENT_TOGGLE_WIN); */
 }
 
@@ -417,9 +403,13 @@ void save_config ()
 
 void GlobalHotkeys::cleanup ()
 {
+#ifdef BUILT_FROM_CMAKE
+    audlog::unsubscribe(&DCustomLogger::go);
+#endif
+
     HotkeyConfiguration* hotkey;
-    ungrab_keys ();
-    release_filter();
+  ungrab_keys ();
+  release_filter();
     hotkey = &(plugin_cfg.first);
     hotkey = hotkey->next;
     while (hotkey)
