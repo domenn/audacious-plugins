@@ -1,0 +1,7 @@
+#include "resource.h"
+
+IDI_ICON_PREV             ICON                     "media-previous.ico"
+IDI_ICON_PAUSE_AUD        ICON                     "media-pause.ico"
+IDI_ICON_PLAY_AUD         ICON                     "media-play.ico"
+IDI_ICON_NEXT             ICON                     "media-next.ico"
+
