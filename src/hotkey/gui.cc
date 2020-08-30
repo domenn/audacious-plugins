@@ -99,6 +99,10 @@ static gboolean on_entry_key_press_event(GtkWidget * widget,
         return false;
     if (event->keyval == GDK_Return && ((event->state & ~GDK_LOCK_MASK) == 0))
         return false;
+#ifdef _WIN32
+    if (event->keyval == GDK_Meta_L || event->keyval == GDK_Meta_R)
+        return false;
+#endif
     if (event->keyval == GDK_ISO_Left_Tab)
     {
         Hotkey::set_keytext(controls->keytext, controls->hotkey.key,
@@ -127,6 +131,7 @@ static gboolean on_entry_key_press_event(GtkWidget * widget,
     Hotkey::set_keytext(controls->keytext, is_mod ? 0 : event->hardware_keycode,
                         mod, TYPE_KEY);
     AUDDBG("lHotkeyFlow:Leave");
+    // Returning TRUE indicates that the event has been handled, and that it should not propagate further.
     return true;
 }
 
@@ -299,11 +304,7 @@ void * make_config_widget()
     load_config();
 
     plugin_cfg = get_config();
-
-    // NOTE d: implement in WIN
-#ifndef _WIN32
     ungrab_keys();
-#endif
 
     main_vbox = gtk_vbox_new(false, 4);
 
@@ -503,12 +504,7 @@ void add_callback(GtkWidget * widget, void * data)
 void destroy_callback()
 {
     KeyControls * controls = first_controls;
-
-    // NOTE d: implement in WIN
-#ifndef _WIN32
     grab_keys();
-#endif
-
     while (controls)
     {
         KeyControls * old;

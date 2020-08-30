@@ -5,30 +5,40 @@
 #include <shobjidl.h>
 #include <windows.h>
 
+#include <cassert>
 #include <cstring>
-#include <gdk/gdkkeysyms.h>
 #include <gdk/gdkwin32.h>
 #include <glib.h>
 #include <gtk/gtkeditable.h>
+#include <iomanip>
 #include <libaudcore/runtime.h>
-#include <string>
-#include <vector>
+#include <src/hotkey/grab.h>
+#include <sstream>
 
 #include "windows_key_str_map.h"
+#include "windows_window.h"
 
 constexpr auto W_KEY_ID_PLAY = 18771;
 constexpr auto W_KEY_ID_PREV = 18772;
 constexpr auto W_KEY_ID_NEXT = 18773;
 constexpr auto W_FIRST_GLOBAL_KEY_ID = 18774;
 
+/**
+ * Handle to window that has thumbbar buttons associated. Nullptr if it is not
+ * on display.
+ */
+WindowsWindow message_receiving_window{
+    nullptr, {}, {}, AudaciousWindowKind::UNKNOWN};
+bool system_up_and_running{false};
+
 template<typename T>
 std::string VirtualKeyCodeToStringMethod2(T virtualKey)
 {
-    WCHAR name[128];
+    wchar_t name[128];
     static auto key_layout = GetKeyboardLayout(0);
     UINT scanCode = MapVirtualKeyEx(virtualKey, MAPVK_VK_TO_VSC, key_layout);
     LONG lParamValue = (scanCode << 16);
-    int result = GetKeyNameTextW(lParamValue, name, 1024);
+    int result = GetKeyNameTextW(lParamValue, name, sizeof name);
     if (result > 0)
     {
         auto * windows_cmd = reinterpret_cast<char *>(
@@ -132,11 +142,16 @@ HRESULT AddThumbarButtons(HWND hwnd)
     return hr;
 }
 
-GdkFilterReturn buttons_evts_filter(GdkXEvent * gdk_xevent, GdkEvent * event,
-                                    gpointer user_data)
+GdkFilterReturn w32_evts_filter(GdkXEvent * gdk_xevent, GdkEvent * event,
+                                gpointer user_data)
 {
     auto msg = reinterpret_cast<MSG *>(gdk_xevent);
-    if (msg->message == WM_COMMAND)
+    // log_win_msg(msg->message);
+    if (msg->message == WM_SHOWWINDOW)
+    {
+        AUDINFO("WinApiMsg WM_SHOWWINDOW for %p", msg->hwnd);
+    }
+    else if (msg->message == WM_COMMAND)
     {
         auto buttonId = static_cast<short>(msg->wParam & 0xFFFF);
         AUDDBG("Clicked button with ID: %d", buttonId);
@@ -150,13 +165,14 @@ GdkFilterReturn buttons_evts_filter(GdkXEvent * gdk_xevent, GdkEvent * event,
             break;
         case W_KEY_ID_PREV:
             handle_keyevent(EVENT_PREV_TRACK);
+            break;
         }
         return GDK_FILTER_REMOVE;
     }
-    if (msg->message == WM_HOTKEY)
+    else if (msg->message == WM_HOTKEY)
     {
-        auto k_id = static_cast<short>(msg->wParam & 0xFFFF);
-        AUDDBG("lHotkeyFlow:Global hotkey: %d", k_id);
+        auto k_id = LOWORD(msg->wParam);
+        AUDDBG("Global hotkey: %du", k_id);
         // Max 20 HKs
         if (k_id >= W_FIRST_GLOBAL_KEY_ID && k_id < W_FIRST_GLOBAL_KEY_ID + 20)
         {
@@ -166,57 +182,73 @@ GdkFilterReturn buttons_evts_filter(GdkXEvent * gdk_xevent, GdkEvent * event,
             {
                 config = config->next;
             }
-            handle_keyevent(config->event);
+            if (handle_keyevent(config->event))
+            {
+                return GDK_FILTER_REMOVE;
+            }
         }
+    }
+    else if (msg->message == WM_CLOSE)
+    {
     }
     return GDK_FILTER_CONTINUE;
 }
 
-struct EnumWindowsCallbackArgs
+void register_hotkeys_with_available_window()
 {
-    explicit EnumWindowsCallbackArgs(DWORD p) : pid(p) {}
-    const DWORD pid;
-    std::vector<HWND> handles;
-};
-
-static BOOL CALLBACK EnumWindowsCallback(HWND hnd, LPARAM lParam)
-{
-    // Get pointer to created callback object for storing data.
-    auto * args = reinterpret_cast<EnumWindowsCallbackArgs *>(lParam);
-    // Callback result are all windows (not only my program). I filter by PID /
-    // thread ID.
-    DWORD windowPID;
-    GetWindowThreadProcessId(hnd, &windowPID);
-    // Compare to the one we have stored in our callbaack structure.
-    if (windowPID == args->pid)
-    {
-        args->handles.push_back(hnd);
+    assert(static_cast<bool>(message_receiving_window));
+    auto* gdkwin = message_receiving_window.gdk_window();
+    if(!gdkwin){
+        AUDINFO("HWND doesn't have associated gdk window. Cannot setup global hotkeys.");
+        return;
     }
-
-    return TRUE;
+    gdk_window_add_filter(gdkwin,
+                          w32_evts_filter, nullptr);
+    register_global_keys(message_receiving_window.handle());
 }
 
-std::vector<HWND> getToplevelWindows()
+void release_filter()
 {
-    // Create object that will hold a result.
-    EnumWindowsCallbackArgs args(GetCurrentProcessId());
-    // AUDERR("Testing getlasterror: %ld\n.", GetLastError());
-    // Call EnumWindows and pass pointer to function and created callback
-    // structure.
-    if (EnumWindows(&EnumWindowsCallback, (LPARAM)&args) == FALSE)
+    if (!message_receiving_window)
     {
-        // If the call fails, return empty vector
-        AUDERR("WinApiError (code %ld). Cannot get windows, hotkey plugin "
-               "won't work.\n",
-               GetLastError());
-        return std::vector<HWND>();
+        return;
     }
-    // Otherwise, callback function filled the struct. Return important data.
-    // Test: GetActiveWindow
-    args.handles.push_back(GetActiveWindow());
-    args.handles.push_back(GetForegroundWindow());
-    return args.handles;
+    gdk_window_remove_filter(message_receiving_window.gdk_window(),
+                             w32_evts_filter, nullptr);
+    message_receiving_window = nullptr;
 }
+//
+// void main_window_created_from_statusbar(
+//    MainWindowSearchFilterData * const passed_data,
+//    WindowsWindow & created_main_window)
+//{
+//    // When window fully shows, must add windows buttons.
+//    gdk_window_remove_filter(
+//        reinterpret_cast<GdkWindow *>(passed_data->window_),
+//        reinterpret_cast<GdkFilterFunc>(passed_data->function_ptr_),
+//        passed_data);
+//    ungrab_keys();
+//    release_filter();
+//    delete passed_data;
+//}
+//
+// GdkFilterReturn main_window_missing_filter(GdkXEvent * gdk_xevent,
+//                                           GdkEvent * event, gpointer
+//                                           user_data)
+//{
+//    auto msg = reinterpret_cast<MSG *>(gdk_xevent);
+//    if (msg->message == WM_SHOWWINDOW && msg->wParam)
+//    {
+//        auto win_data = WindowsWindow::get_window_data(msg->hwnd);
+//        if (win_data.is_main_window())
+//        {
+//            main_window_created_from_statusbar(
+//                reinterpret_cast<MainWindowSearchFilterData *>(user_data),
+//                win_data);
+//        }
+//    }
+//    return GDK_FILTER_CONTINUE;
+//}
 
 /**
  * GSourceFunc:
@@ -231,45 +263,10 @@ std::vector<HWND> getToplevelWindows()
  */
 gboolean window_created_callback(gpointer user_data)
 {
-
-    AUDDBG("lHotkeyFlow:Window created. Do real stuff.");
-    auto wins = getToplevelWindows();
-    AUDDBG("lHotkeyFlow:windows: %zu", wins.size());
-    for (auto win : wins)
-    {
-        wchar_t className[311];
-        GetClassNameW(win, className, _countof(className));
-        auto s_cn = reinterpret_cast<char *>(
-            g_utf16_to_utf8(reinterpret_cast<const gunichar2 *>(className), -1,
-                            nullptr, nullptr, nullptr));
-
-        GetWindowTextW(win, className, _countof(className));
-        auto s_cn2 = reinterpret_cast<char *>(
-            g_utf16_to_utf8(reinterpret_cast<const gunichar2 *>(className), -1,
-                            nullptr, nullptr, nullptr));
-        if (s_cn)
-        {
-            AUDDBG("lHotkeyFlow:WIN: %s%s", s_cn,
-                   ([s_cn2]() {
-                       std::string returning{};
-                       if (s_cn2)
-                       {
-                           returning = std::string(" titled: ") + s_cn2;
-                           g_free(s_cn2);
-                       }
-                       return returning;
-                   }())
-                       .c_str());
-            g_free(s_cn);
-        }
-    }
-    auto the_hwnd = wins.back();
-    // AddThumbarButtons(the_hwnd); Disabled for now ... first get hotkeys
-    // perfectly stable
-    auto gdkwin = gdk_win32_handle_table_lookup(the_hwnd);
-    gdk_window_add_filter((GdkWindow *)gdkwin, buttons_evts_filter, nullptr);
-    register_global_keys(the_hwnd);
-    return false;
+    AUDDBG("Window created. Do real stuff.");
+    system_up_and_running = true;
+    grab_keys();
+    return G_SOURCE_REMOVE;
 }
 
 void win_init()
@@ -324,4 +321,68 @@ void Hotkey::key_to_string(int key, char ** out_keytext)
     }
     }
     *out_keytext = g_strdup(WIN_VK_NAMES[key]);
+}
+
+char * Hotkey::create_human_readable_keytext(const char * const keytext,
+                                             int key, int mask)
+{
+    const auto w_mask = static_cast<UINT>(mask);
+    std::ostringstream produced;
+    // "Control", "Shift", "Alt", "Win"
+    if (w_mask & static_cast<UINT>(MOD_CONTROL))
+    {
+        produced << "Control + ";
+    }
+    if (w_mask & static_cast<UINT>(MOD_SHIFT))
+    {
+        produced << "Shift + ";
+    }
+    if (w_mask & static_cast<UINT>(MOD_ALT))
+    {
+        produced << "Alt + ";
+    }
+    if (w_mask & static_cast<UINT>(MOD_WIN))
+    {
+        produced << "Win + ";
+    }
+    produced << keytext;
+
+    AUDDBG(produced.str().c_str());
+    return g_strdup(produced.str().c_str());
+}
+
+void grab_keys()
+{
+    if (!system_up_and_running)
+    {
+        return;
+    }
+    AUDDBG("Grabbing ...");
+
+    message_receiving_window = WindowsWindow::find_message_receiver_window();
+    AUDDBG("Will hook together the window of kind %s", message_receiving_window.kind_string());
+    if (message_receiving_window.kind() == AudaciousWindowKind::NONE ||
+        message_receiving_window.kind() == AudaciousWindowKind::UNKNOWN)
+    {
+        AUDERR("Win API did not find the window to receive messages. Global "
+               "hotkeys are disabled!");
+        message_receiving_window = nullptr;
+        return;
+    }
+    register_hotkeys_with_available_window();
+}
+void ungrab_keys()
+{
+    AUDDBG("Releasing ...");
+    if (message_receiving_window)
+    {
+        auto * hotkey = &(plugin_cfg.first);
+        auto _id = W_FIRST_GLOBAL_KEY_ID;
+        while (hotkey)
+        {
+            UnregisterHotKey(message_receiving_window.handle(), _id++);
+            hotkey = hotkey->next;
+        }
+    }
+    release_filter();
 }

@@ -46,7 +46,6 @@
 #include "api_hotkey.h"
 #include "grab.h"
 #include "gui.h"
-#include "plugin.h"
 
 #ifdef BUILT_FROM_CMAKE
 #include "../../audacious-plugins_simpleAF/src/thirdparty/d_custom_logger.hpp"
@@ -104,8 +103,9 @@ bool GlobalHotkeys::init()
     }
 #ifdef _WIN32
     win_init();
-#endif
+#else
     setup_filter();
+#endif
     load_config();
     grab_keys();
     return true;

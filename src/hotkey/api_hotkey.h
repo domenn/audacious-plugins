@@ -32,6 +32,7 @@ public:
     static void add_hotkey(HotkeyConfiguration ** pphotkey, OS_KeySym keysym,
                            int mask, int type, EVENT event);
     static void key_to_string(int key, char ** out_keytext);
+    static char* create_human_readable_keytext(const char* const keytext, int key, int mask);
 };
 
 #ifndef _WIN32

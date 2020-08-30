@@ -48,3 +48,24 @@ void Hotkey::key_to_string(int key, char ** out_keytext)
         *out_keytext = g_strdup(XKeysymToString(keysym));
     }
 }
+
+void Hotkey::create_human_readable_keytext(const char* const keytext, int key, int mask, char&* text)
+{
+    static const constexpr unsigned int modifiers[] = {
+        HK_CONTROL_MASK, HK_SHIFT_MASK, HK_MOD1_ALT_MASK, HK_MOD2_MASK,
+        HK_MOD3_MASK,    HK_MOD4_MASK,  HK_MOD5_MASK};
+    static const constexpr char * const modifier_string[] = {
+        "Control", "Shift", "Alt", "Mod2", "Mod3", "Super", "Mod5"};
+    const char * strings[9];
+    int i, j;
+    for (i = 0, j = 0; j < 7; j++)
+    {
+        if (mask & modifiers[j])
+            strings[i++] = modifier_string[j];
+    }
+    if (key != 0)
+        strings[i++] = keytext;
+    strings[i] = nullptr;
+
+    text = g_strjoinv(" + ", (char **)strings);
+}

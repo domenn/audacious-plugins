@@ -111,6 +111,8 @@ static GdkFilterReturn gdk_filter(GdkXEvent * xevent, GdkEvent * event,
     return GDK_FILTER_CONTINUE;
 }
 
+#ifndef _WIN32
+
 gboolean setup_filter()
 {
 #ifdef _WIN32
@@ -124,15 +126,11 @@ gboolean setup_filter()
 
 void release_filter()
 {
-#ifdef _WIN32
-    AUDDBG("lHotkeyFlow:win CommonGrab: down filter");
-#endif
     gdk_window_remove_filter(
         gdk_screen_get_root_window(gdk_screen_get_default()), gdk_filter,
         nullptr);
 }
 
-#ifndef _WIN32
 /* Taken from xbindkeys */
 static void get_offending_modifiers(Display * dpy)
 {
