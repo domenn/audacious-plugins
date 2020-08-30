@@ -54,6 +54,8 @@ std::string VirtualKeyCodeToStringMethod2(T virtualKey)
     }
 }
 
+void grab_keys_onto_window();
+
 void Hotkey::add_hotkey(HotkeyConfiguration ** pphotkey,
                         Hotkey::OS_KeySym keysym, int mask, int type,
                         EVENT event)
@@ -142,6 +144,68 @@ HRESULT AddThumbarButtons(HWND hwnd)
     return hr;
 }
 
+GdkFilterReturn w32_events_filter_first_everything(GdkXEvent * gdk_xevent,
+                                                   GdkEvent * event,
+                                                   gpointer user_data)
+{
+    auto msg = reinterpret_cast<MSG *>(gdk_xevent);
+    if (!msg->hwnd)
+    {
+        AUDWARN("We have event but hwnd is null. This doesn't make sense.");
+        return GDK_FILTER_CONTINUE;
+    }
+    // log_win_msg(msg->message);
+    if (msg->message == WM_SHOWWINDOW)
+    {
+        if (msg->wParam == TRUE)
+        {
+            auto event_window = WindowsWindow::get_window_data(msg->hwnd);
+            AUDDBG("(CommingUp)TRUE %s; %s",
+                   stringify_win_evt(msg->message).c_str(),
+                   (static_cast<std::string>(event_window)).c_str());
+            if (event_window.is_main_window(true))
+            {
+                event_window.
+                WindowsWindow::main_window_hidden_ = false;
+                AUDDBG(
+                    "TRANSFER EventReceivingWindow from %s to mainwindow HWND "
+                    "%p",
+                    static_cast<std::string>(message_receiving_window).c_str(),
+                    event_window.handle());
+                ungrab_keys();
+                message_receiving_window = std::move(event_window);
+                grab_keys_onto_window();
+            }
+        }
+        //        else
+        //        {
+        //            // leaving us.
+        //            AUDDBG("(GettingDown)FALSE %s; %s",
+        //                   stringify_win_evt(msg->message).c_str(),
+        //                   (static_cast<std::string>(event_window)).c_str());
+        //        }
+    }
+    //    else if (msg->message == WM_CLOSE)
+    //    {
+    //        auto event_window = WindowsWindow::get_window_data(msg->hwnd);
+    //        AUDDBG("%s: ; %s", stringify_win_evt(msg->message).c_str(),
+    //               (static_cast<std::string>(event_window)).c_str());
+    //    }
+    //    else if (msg->message == WM_CREATE)
+    //    {
+    //        auto event_window = WindowsWindow::get_window_data(msg->hwnd);
+    //        AUDDBG("%s: ; %s", stringify_win_evt(msg->message).c_str(),
+    //               (static_cast<std::string>(event_window)).c_str());
+    //    }
+    //    else if (msg->message == WM_DESTROY)
+    //    {
+    //        auto event_window = WindowsWindow::get_window_data(msg->hwnd);
+    //        AUDDBG("%s: ; %s", stringify_win_evt(msg->message).c_str(),
+    //               (static_cast<std::string>(event_window)).c_str());
+    //    }
+    return GDK_FILTER_CONTINUE;
+}
+
 GdkFilterReturn w32_evts_filter(GdkXEvent * gdk_xevent, GdkEvent * event,
                                 gpointer user_data)
 {
@@ -149,7 +213,15 @@ GdkFilterReturn w32_evts_filter(GdkXEvent * gdk_xevent, GdkEvent * event,
     // log_win_msg(msg->message);
     if (msg->message == WM_SHOWWINDOW)
     {
-        AUDINFO("WinApiMsg WM_SHOWWINDOW for %p", msg->hwnd);
+        if (msg->wParam != TRUE)
+        {
+            AUDDBG("MainWindow is getting hidden. We need to recreate the "
+                   "hooks.\n  TRANSFER EventReceivingWindow from %s",
+                   static_cast<std::string>(message_receiving_window).c_str());
+            WindowsWindow::main_window_hidden_ = true;
+            ungrab_keys();
+            grab_keys();
+        }
     }
     else if (msg->message == WM_COMMAND)
     {
@@ -188,22 +260,20 @@ GdkFilterReturn w32_evts_filter(GdkXEvent * gdk_xevent, GdkEvent * event,
             }
         }
     }
-    else if (msg->message == WM_CLOSE)
-    {
-    }
     return GDK_FILTER_CONTINUE;
 }
 
 void register_hotkeys_with_available_window()
 {
     assert(static_cast<bool>(message_receiving_window));
-    auto* gdkwin = message_receiving_window.gdk_window();
-    if(!gdkwin){
-        AUDINFO("HWND doesn't have associated gdk window. Cannot setup global hotkeys.");
+    auto * gdkwin = message_receiving_window.gdk_window();
+    if (!gdkwin)
+    {
+        AUDINFO("HWND doesn't have associated gdk window. Cannot setup global "
+                "hotkeys.");
         return;
     }
-    gdk_window_add_filter(gdkwin,
-                          w32_evts_filter, nullptr);
+    gdk_window_add_filter(gdkwin, w32_evts_filter, nullptr);
     register_global_keys(message_receiving_window.handle());
 }
 
@@ -265,6 +335,7 @@ gboolean window_created_callback(gpointer user_data)
 {
     AUDDBG("Window created. Do real stuff.");
     system_up_and_running = true;
+    gdk_window_add_filter(nullptr, w32_events_filter_first_everything, nullptr);
     grab_keys();
     return G_SOURCE_REMOVE;
 }
@@ -350,17 +421,11 @@ char * Hotkey::create_human_readable_keytext(const char * const keytext,
     AUDDBG(produced.str().c_str());
     return g_strdup(produced.str().c_str());
 }
-
-void grab_keys()
+void grab_keys_onto_window()
 {
-    if (!system_up_and_running)
-    {
-        return;
-    }
-    AUDDBG("Grabbing ...");
-
-    message_receiving_window = WindowsWindow::find_message_receiver_window();
-    AUDDBG("Will hook together the window of kind %s", message_receiving_window.kind_string());
+    AUDDBG("Will hook together the window of kind %s\n :%s",
+           message_receiving_window.kind_string(),
+           static_cast<std::string>(message_receiving_window).c_str());
     if (message_receiving_window.kind() == AudaciousWindowKind::NONE ||
         message_receiving_window.kind() == AudaciousWindowKind::UNKNOWN)
     {
@@ -370,6 +435,17 @@ void grab_keys()
         return;
     }
     register_hotkeys_with_available_window();
+}
+void grab_keys()
+{
+    if (!system_up_and_running)
+    {
+        return;
+    }
+    AUDDBG("Grabbing ...");
+
+    message_receiving_window = WindowsWindow::find_message_receiver_window();
+    grab_keys_onto_window();
 }
 void ungrab_keys()
 {

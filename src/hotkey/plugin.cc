@@ -51,6 +51,8 @@
 #include "../../audacious-plugins_simpleAF/src/thirdparty/d_custom_logger.hpp"
 #endif
 
+extern bool system_up_and_running;
+
 class GlobalHotkeys : public GeneralPlugin
 {
 public:
@@ -411,10 +413,11 @@ void save_config()
 
 void GlobalHotkeys::cleanup()
 {
+    system_up_and_running = false;
 #ifdef BUILT_FROM_CMAKE
+    AUDWARN("Cleanup of globalHotkeys");
     audlog::unsubscribe(&DCustomLogger::go);
 #endif
-
     HotkeyConfiguration * hotkey;
     ungrab_keys();
     release_filter();

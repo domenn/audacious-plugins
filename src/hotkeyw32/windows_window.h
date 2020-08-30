@@ -16,6 +16,7 @@ enum class AudaciousWindowKind
 
 struct WindowsWindow
 {
+    static bool main_window_hidden_;
     WindowsWindow() = default;
     ~WindowsWindow() = default;
     WindowsWindow(const WindowsWindow & right) = delete;
@@ -25,7 +26,7 @@ struct WindowsWindow
 
     WindowsWindow(HWND handle, std::string className, std::string winHeader,                  AudaciousWindowKind kind);
     static std::string translated_title();
-    bool is_main_window() const;
+    bool is_main_window(bool allow_hidden = false) const;
     explicit operator std::string() const;
     static WindowsWindow get_window_data(HWND pHwnd);
     static WindowsWindow find_message_receiver_window();
@@ -48,7 +49,7 @@ private:
     HWND handle_{};
     std::string class_name_{};
     std::string win_header_{};
-    AudaciousWindowKind kind_{};
+    mutable AudaciousWindowKind kind_{};
     mutable GdkWindow * gdk_window_{};
 };
 
@@ -72,5 +73,6 @@ struct MainWindowSearchFilterData
 };
 
 std::vector<WindowsWindow> get_this_app_windows();
+std::string stringify_win_evt(UINT id);
 
 #endif

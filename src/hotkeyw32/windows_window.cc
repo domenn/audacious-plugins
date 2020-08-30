@@ -1,8 +1,10 @@
 #include "windows_window.h"
 
 #include <algorithm>
+#include <iomanip>
 #include <libaudcore/i18n.h>
 #include <libaudcore/runtime.h>
+#include <sstream>
 #include <vector>
 
 class Utf16CharArrConverter
@@ -29,9 +31,17 @@ public:
     }
 };
 
+template<typename T>
+std::string to_hex_string(T integer)
+{
+    std::ostringstream os;
+    os << "0x" << std::setw(4) << std::setfill('0') << std::hex << integer;
+    return os.str();
+}
+
 std::string print_wins(const std::vector<WindowsWindow> & wins)
 {
-    std::string printer("Aud has " + std::to_string(wins.size()) + " windows:");
+    std::string printer;
     for (auto & w : wins)
     {
         printer.append("\n   ").append(static_cast<std::string>(w));
@@ -53,13 +63,21 @@ std::string WindowsWindow::translated_title()
     org.erase(0, 2);
     return org;
 }
-bool WindowsWindow::is_main_window() const
+bool WindowsWindow::is_main_window(bool allow_hidden) const
 {
-    return class_name_ == "gdkWindowToplevel" && [](const std::string & title) {
-        return title == N_("Audacious") ||
-               title.find(translated_title()) != std::string::npos ||
-               title == N_("Buffering ..."); // msgid "%s - Audacious"
-    }(win_header_);
+    if (main_window_hidden_ && !allow_hidden)
+        return false;
+    bool returning =
+        (class_name_ == "gdkWindowToplevel" && [](const std::string & title) {
+            return title == N_("Audacious") ||
+                   title.find(translated_title()) != std::string::npos ||
+                   title == N_("Buffering ..."); // msgid "%s - Audacious"
+        }(win_header_));
+    if (returning)
+    {
+        kind_ = AudaciousWindowKind::MAIN_WINDOW;
+    }
+    return returning;
 }
 WindowsWindow::operator std::string() const
 {
@@ -69,9 +87,12 @@ WindowsWindow::operator std::string() const
     }
     std::string printer;
     printer.append(std::to_string(reinterpret_cast<long long>(handle_)))
+        .append("|")
+        .append(to_hex_string(handle_))
         .append("(gdk:")
-        .append(std::to_string(reinterpret_cast<long long>(
-            gdk_win32_handle_table_lookup(handle_))))
+        .append(std::to_string(reinterpret_cast<long long>(gdk_window())))
+        .append("|")
+        .append(to_hex_string(gdk_window()))
         .append(") ")
         .append(class_name_)
         .append(": ")
@@ -216,4 +237,53 @@ const char * WindowsWindow::kind_string()
         ENUM_KIND_CASE(
             AudaciousWindowKind::TASKBAR_WITH_WINHANDLE_AND_GDKHANDLE)
     }
+    return "bad WindowsWindow ; unknown";
 }
+
+std::string stringify_win_evt(UINT id)
+{
+    switch (id)
+    {
+        ENUM_KIND_CASE(WM_DESTROY)
+        ENUM_KIND_CASE(WM_CREATE)
+        ENUM_KIND_CASE(WM_ACTIVATE)
+        ENUM_KIND_CASE(WM_ENABLE)
+        ENUM_KIND_CASE(WM_SHOWWINDOW)
+        ENUM_KIND_CASE(WM_WINDOWPOSCHANGING)
+        ENUM_KIND_CASE(WM_WINDOWPOSCHANGED)
+        ENUM_KIND_CASE(WM_NCACTIVATE)
+        ENUM_KIND_CASE(WM_NCPAINT)
+        ENUM_KIND_CASE(WM_NCCREATE)
+        ENUM_KIND_CASE(WM_ACTIVATEAPP)
+        ENUM_KIND_CASE(WM_KILLFOCUS)
+        ENUM_KIND_CASE(WM_SETFOCUS)
+        ENUM_KIND_CASE(WM_IME_SETCONTEXT)
+        ENUM_KIND_CASE(WM_IME_NOTIFY)
+        ENUM_KIND_CASE(WM_GETICON)
+        ENUM_KIND_CASE(WM_PAINT)
+        ENUM_KIND_CASE(WM_SETCURSOR)
+        ENUM_KIND_CASE(WM_MOUSEMOVE)
+        ENUM_KIND_CASE(WM_NCMOUSEMOVE)
+        ENUM_KIND_CASE(WM_MOUSEACTIVATE)
+        ENUM_KIND_CASE(WM_NCLBUTTONDOWN)
+        ENUM_KIND_CASE(WM_CAPTURECHANGED)
+        ENUM_KIND_CASE(WM_SYSCOMMAND)
+        ENUM_KIND_CASE(WM_CLOSE)
+        ENUM_KIND_CASE(WM_MOVING)
+        ENUM_KIND_CASE(WM_ERASEBKGND)
+        ENUM_KIND_CASE(WM_EXITMENULOOP)
+        ENUM_KIND_CASE(WM_NCMOUSELEAVE)
+        ENUM_KIND_CASE(WM_NCHITTEST)
+        ENUM_KIND_CASE(WM_EXITSIZEMOVE)
+        ENUM_KIND_CASE(WM_ENTERSIZEMOVE)
+        ENUM_KIND_CASE(WM_MOUSELEAVE)
+        ENUM_KIND_CASE(WM_PARENTNOTIFY)
+        ENUM_KIND_CASE(WM_NCCALCSIZE)
+        ENUM_KIND_CASE(WM_GETMINMAXINFO)
+        ENUM_KIND_CASE(WM_QUERYOPEN)
+    default:
+        return "Unknown msg: " + to_hex_string(id);
+    }
+}
+
+bool WindowsWindow::main_window_hidden_{false};
