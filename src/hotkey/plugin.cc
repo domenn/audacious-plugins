@@ -67,27 +67,22 @@ public:
     void cleanup() override;
 };
 
-EXPORT GlobalHotkeys aud_plugin_instance;
-
-#ifndef _WIN32
 /* global vars */
-static
-#else
+EXPORT GlobalHotkeys aud_plugin_instance;
 PluginConfig plugin_cfg_gtk_global_hk;
-#endif
 
-    const char GlobalHotkeys::about[] = N_(
-        "Global Hotkey Plugin\n"
-        "Control the player with global key combinations or multimedia "
-        "keys.\n\n"
-        "Copyright (C) 2007-2008 Sascha Hlusiak <contact@saschahlusiak.de>\n\n"
-        "Contributors include:\n"
-        "Copyright (C) 2020 Domen Mori <domen.mory@gmail.com>\n"
-        "Copyright (C) 2006-2007 Vladimir Paskov <vlado.paskov@gmail.com>\n"
-        "Copyright (C) 2000-2002 Ville Syrjälä <syrjala@sci.fi>,\n"
-        " Bryn Davies <curious@ihug.com.au>,\n"
-        " Jonathan A. Davis <davis@jdhouse.org>,\n"
-        " Jeremy Tan <nsx@nsx.homeip.net>");
+const char GlobalHotkeys::about[] =
+    N_("Global Hotkey Plugin\n"
+       "Control the player with global key combinations or multimedia "
+       "keys.\n\n"
+       "Copyright (C) 2007-2008 Sascha Hlusiak <contact@saschahlusiak.de>\n\n"
+       "Contributors include:\n"
+       "Copyright (C) 2020 Domen Mori <domen.mory@gmail.com>\n"
+       "Copyright (C) 2006-2007 Vladimir Paskov <vlado.paskov@gmail.com>\n"
+       "Copyright (C) 2000-2002 Ville Syrjälä <syrjala@sci.fi>,\n"
+       " Bryn Davies <curious@ihug.com.au>,\n"
+       " Jonathan A. Davis <davis@jdhouse.org>,\n"
+       " Jeremy Tan <nsx@nsx.homeip.net>");
 
 PluginConfig * get_config() { return &plugin_cfg_gtk_global_hk; }
 
@@ -413,7 +408,9 @@ void save_config()
 
 void GlobalHotkeys::cleanup()
 {
+#ifdef _WIN32
     system_up_and_running = false;
+#endif
 #ifdef BUILT_FROM_CMAKE
     AUDWARN("Cleanup of globalHotkeys");
     audlog::unsubscribe(&DCustomLogger::go);

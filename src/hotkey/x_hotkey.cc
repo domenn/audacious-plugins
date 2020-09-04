@@ -76,7 +76,7 @@ void Hotkey::key_to_string(int key, char ** out_keytext)
     }
 }
 
-void Hotkey::create_human_readable_keytext(const char* const keytext, int key, int mask, char&* text)
+char* Hotkey::create_human_readable_keytext(const char* const keytext, int key, int mask)
 {
     static const constexpr unsigned int modifiers[] = {
         HK_CONTROL_MASK, HK_SHIFT_MASK, HK_MOD1_ALT_MASK, HK_MOD2_MASK,
@@ -94,5 +94,5 @@ void Hotkey::create_human_readable_keytext(const char* const keytext, int key, i
         strings[i++] = keytext;
     strings[i] = nullptr;
 
-    text = g_strjoinv(" + ", (char **)strings);
+    return g_strjoinv(" + ", (char **)strings);
 }
