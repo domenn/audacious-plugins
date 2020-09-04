@@ -105,7 +105,6 @@ void Hotkey::set_keytext(GtkWidget * entry, int key, int mask, int type)
     else
     {
         char * keytext = nullptr;
-        int i, j;
         if (type == TYPE_KEY)
         {
             Hotkey::key_to_string(key, &keytext);

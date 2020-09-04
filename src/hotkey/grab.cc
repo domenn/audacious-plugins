@@ -34,15 +34,8 @@
  * USA.
  */
 
-#include <gtk/gtk.h>
-
-#ifndef _WIN32
 #include <gdk/gdkx.h>
-#else
-#include <X11/Xlib.h>
-#include <cassert>
-#include <libaudcore/runtime.h>
-#endif
+#include <gtk/gtk.h>
 
 #include "grab.h"
 #include "plugin.h"
@@ -52,78 +45,6 @@ static unsigned int numlock_mask = 0;
 static unsigned int scrolllock_mask = 0;
 static unsigned int capslock_mask = 0;
 
-static int x11_error_handler(Display * dpy, XErrorEvent * error) { return 0; }
-
-static GdkFilterReturn gdk_filter(GdkXEvent * xevent, GdkEvent * event,
-                                  void * data)
-{
-    HotkeyConfiguration * hotkey;
-    hotkey = &(get_config()->first);
-    switch (((XEvent *)xevent)->type)
-    {
-    case KeyPress:
-    {
-        XKeyEvent * keyevent = (XKeyEvent *)xevent;
-        while (hotkey)
-        {
-            if ((hotkey->key == keyevent->keycode) &&
-                (hotkey->mask ==
-                 (keyevent->state &
-                  ~(scrolllock_mask | numlock_mask | capslock_mask))) &&
-                (hotkey->type == TYPE_KEY))
-            {
-                if (handle_keyevent(hotkey->event))
-                    return GDK_FILTER_REMOVE;
-                break;
-            }
-
-            hotkey = hotkey->next;
-        }
-        break;
-    }
-    case ButtonPress:
-    {
-        XButtonEvent * buttonevent = (XButtonEvent *)xevent;
-        while (hotkey)
-        {
-            if ((hotkey->key == buttonevent->button) &&
-                (hotkey->mask ==
-                 (buttonevent->state &
-                  ~(scrolllock_mask | numlock_mask | capslock_mask))) &&
-                (hotkey->type == TYPE_MOUSE))
-            {
-                if (handle_keyevent(hotkey->event))
-                    return GDK_FILTER_REMOVE;
-                break;
-            }
-
-            hotkey = hotkey->next;
-        }
-
-        break;
-    }
-    }
-
-    return GDK_FILTER_CONTINUE;
-}
-
-#ifndef _WIN32
-
-gboolean setup_filter()
-{
-    gdk_window_add_filter(gdk_screen_get_root_window(gdk_screen_get_default()),
-                          gdk_filter, nullptr);
-
-    return true;
-}
-
-void release_filter()
-{
-    gdk_window_remove_filter(
-        gdk_screen_get_root_window(gdk_screen_get_default()), gdk_filter,
-        nullptr);
-}
-
 /* Taken from xbindkeys */
 static void get_offending_modifiers(Display * dpy)
 {
@@ -131,9 +52,8 @@ static void get_offending_modifiers(Display * dpy)
     XModifierKeymap * modmap;
     KeyCode nlock, slock;
 
-    static int mask_table[8] = {HK_SHIFT_MASK,    LockMask,     HK_CONTROL_MASK,
-                                HK_MOD1_ALT_MASK, HK_MOD2_MASK, HK_MOD3_MASK,
-                                HK_MOD4_MASK,     HK_MOD5_MASK};
+    static int mask_table[8] = {ShiftMask, LockMask, ControlMask, Mod1Mask,
+                                Mod2Mask,  Mod3Mask, Mod4Mask,    Mod5Mask};
 
     nlock = XKeysymToKeycode(dpy, XK_Num_Lock);
     slock = XKeysymToKeycode(dpy, XK_Scroll_Lock);
@@ -160,6 +80,8 @@ static void get_offending_modifiers(Display * dpy)
     if (modmap)
         XFreeModifiermap(modmap);
 }
+
+static int x11_error_handler(Display * dpy, XErrorEvent * error) { return 0; }
 
 /* grab required keys */
 static void grab_key(const HotkeyConfiguration * hotkey, Display * xdisplay,
@@ -265,7 +187,7 @@ void grab_keys()
 {
     Display * xdisplay;
     int screen;
-    PluginConfig * plugin_cfg_gtk_global_hk = get_config();
+    PluginConfig * plugin_cfg = get_config();
     HotkeyConfiguration * hotkey;
 
     XErrorHandler old_handler = 0;
@@ -278,7 +200,7 @@ void grab_keys()
     old_handler = XSetErrorHandler(x11_error_handler);
 
     get_offending_modifiers(xdisplay);
-    hotkey = &(plugin_cfg_gtk_global_hk->first);
+    hotkey = &(plugin_cfg->first);
     while (hotkey)
     {
         for (screen = 0; screen < ScreenCount(xdisplay); screen++)
@@ -389,7 +311,7 @@ void ungrab_keys()
 {
     Display * xdisplay;
     int screen;
-    PluginConfig * plugin_cfg_gtk_global_hk = get_config();
+    PluginConfig * plugin_cfg = get_config();
     HotkeyConfiguration * hotkey;
 
     XErrorHandler old_handler = 0;
@@ -405,7 +327,7 @@ void ungrab_keys()
 
     get_offending_modifiers(xdisplay);
 
-    hotkey = &(plugin_cfg_gtk_global_hk->first);
+    hotkey = &(plugin_cfg->first);
     while (hotkey)
     {
         for (screen = 0; screen < ScreenCount(xdisplay); screen++)
@@ -420,4 +342,71 @@ void ungrab_keys()
 
     grabbed = 0;
 }
-#endif
+
+static GdkFilterReturn gdk_filter(GdkXEvent * xevent, GdkEvent * event,
+                                  void * data)
+{
+    HotkeyConfiguration * hotkey;
+    hotkey = &(get_config()->first);
+    switch (((XEvent *)xevent)->type)
+    {
+    case KeyPress:
+    {
+        XKeyEvent * keyevent = (XKeyEvent *)xevent;
+        while (hotkey)
+        {
+            if ((hotkey->key == keyevent->keycode) &&
+                (hotkey->mask ==
+                 (keyevent->state &
+                  ~(scrolllock_mask | numlock_mask | capslock_mask))) &&
+                (hotkey->type == TYPE_KEY))
+            {
+                if (handle_keyevent(hotkey->event))
+                    return GDK_FILTER_REMOVE;
+                break;
+            }
+
+            hotkey = hotkey->next;
+        }
+        break;
+    }
+    case ButtonPress:
+    {
+        XButtonEvent * buttonevent = (XButtonEvent *)xevent;
+        while (hotkey)
+        {
+            if ((hotkey->key == buttonevent->button) &&
+                (hotkey->mask ==
+                 (buttonevent->state &
+                  ~(scrolllock_mask | numlock_mask | capslock_mask))) &&
+                (hotkey->type == TYPE_MOUSE))
+            {
+                if (handle_keyevent(hotkey->event))
+                    return GDK_FILTER_REMOVE;
+                break;
+            }
+
+            hotkey = hotkey->next;
+        }
+
+        break;
+    }
+    }
+
+    return GDK_FILTER_CONTINUE;
+}
+
+gboolean setup_filter()
+{
+    gdk_window_add_filter(gdk_screen_get_root_window(gdk_screen_get_default()),
+                          gdk_filter, nullptr);
+
+    return true;
+}
+
+void release_filter()
+{
+    gdk_window_remove_filter(
+        gdk_screen_get_root_window(gdk_screen_get_default()), gdk_filter,
+        nullptr);
+}
