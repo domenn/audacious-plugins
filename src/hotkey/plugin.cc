@@ -298,7 +298,6 @@ gboolean handle_keyevent(EVENT event)
 
 void load_defaults()
 {
-    AUDDBG("lHotkeyFlow:Entry, loading defaults.");
     HotkeyConfiguration * hotkey;
 
     hotkey = &(plugin_cfg.first);

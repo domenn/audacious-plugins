@@ -90,7 +90,6 @@ static const char * event_desc[EVENT_MAX] = {
 static gboolean on_entry_key_press_event(GtkWidget * widget,
                                          GdkEventKey * event, void * user_data)
 {
-    AUDDBG("lHotkeyFlow:Entry");
     KeyControls * controls = (KeyControls *)user_data;
 
     if (event->keyval == GDK_Tab)
@@ -130,7 +129,6 @@ static gboolean on_entry_key_press_event(GtkWidget * widget,
 
     Hotkey::set_keytext(controls->keytext, is_mod ? 0 : event->hardware_keycode,
                         mod, TYPE_KEY);
-    AUDDBG("lHotkeyFlow:Leave");
     // Returning TRUE indicates that the event has been handled, and that it should not propagate further.
     return true;
 }

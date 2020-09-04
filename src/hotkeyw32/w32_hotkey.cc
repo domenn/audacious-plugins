@@ -60,7 +60,6 @@ void Hotkey::add_hotkey(HotkeyConfiguration ** pphotkey,
                         Hotkey::OS_KeySym keysym, int mask, int type,
                         EVENT event)
 {
-    AUDDBG("lHotkeyFlow:Win call.");
     HotkeyConfiguration * photkey;
     if (keysym == 0)
         return;
@@ -342,7 +341,6 @@ gboolean window_created_callback(gpointer user_data)
 
 void win_init()
 {
-    AUDDBG("lHotkeyFlow:Win .. important call.");
     g_idle_add(&window_created_callback, nullptr);
 }
 

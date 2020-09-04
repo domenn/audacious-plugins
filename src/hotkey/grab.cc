@@ -57,10 +57,6 @@ static int x11_error_handler(Display * dpy, XErrorEvent * error) { return 0; }
 static GdkFilterReturn gdk_filter(GdkXEvent * xevent, GdkEvent * event,
                                   void * data)
 {
-#ifdef _WIN32
-    AUDDBG("lHotkeyFlow:win CommonGrab: Filter trigger.");
-    assert(false);
-#endif
     HotkeyConfiguration * hotkey;
     hotkey = &(get_config()->first);
     switch (((XEvent *)xevent)->type)
@@ -115,9 +111,6 @@ static GdkFilterReturn gdk_filter(GdkXEvent * xevent, GdkEvent * event,
 
 gboolean setup_filter()
 {
-#ifdef _WIN32
-    AUDDBG("lHotkeyFlow:win CommonGrab: filter up");
-#endif
     gdk_window_add_filter(gdk_screen_get_root_window(gdk_screen_get_default()),
                           gdk_filter, nullptr);
 
