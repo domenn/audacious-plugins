@@ -2,8 +2,8 @@
  *  This file is part of audacious-hotkey plugin for audacious
  *
  *  Copyright (c) 2007 - 2008  Sascha Hlusiak <contact@saschahlusiak.de>
- *  Name: gui.c
- *  Description: gui.c
+ *  Name: gui.cc
+ *  Description: gui.cc
  *
  *  Part of this code is from itouch-ctrl plugin.
  *  Authors of itouch-ctrl are listed below:
