@@ -82,6 +82,7 @@ PluginConfig plugin_cfg_gtk_global_hk;
         "keys.\n\n"
         "Copyright (C) 2007-2008 Sascha Hlusiak <contact@saschahlusiak.de>\n\n"
         "Contributors include:\n"
+        "Copyright (C) 2020 Domen Mori <domen.mory@gmail.com>\n"
         "Copyright (C) 2006-2007 Vladimir Paskov <vlado.paskov@gmail.com>\n"
         "Copyright (C) 2000-2002 Ville Syrjälä <syrjala@sci.fi>,\n"
         " Bryn Davies <curious@ihug.com.au>,\n"

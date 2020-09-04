@@ -27,7 +27,6 @@
 
 #include <src/hotkey/api_hotkey.h>
 
-#include <shobjidl.h>
 #include <windows.h>
 
 #include <cassert>
@@ -129,44 +128,44 @@ void register_global_keys(HWND handle)
 //  ptr_first_element[loc] = 0;
 //}
 
-HRESULT AddThumbarButtons(HWND hwnd)
-{
-    // Define an array of two buttons. These buttons provide images through an
-    // image list and also provide tooltips.
-    THUMBBUTTONMASK dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
-
-    /*
-      THUMBBUTTONMASK dwMask;
-      UINT iId;
-      UINT iBitmap;
-      HICON hIcon;
-      WCHAR szTip[260];
-      THUMBBUTTONFLAGS dwFlags;
-      */
-
-    THUMBBUTTON btn[]{
-        {dwMask, W_KEY_ID_PREV, 0, nullptr, L"Previous song", THBF_ENABLED},
-        {dwMask, W_KEY_ID_PLAY, 0, nullptr, L"Play/pause", THBF_ENABLED},
-        {dwMask, W_KEY_ID_NEXT, 0, nullptr, L"Next song", THBF_ENABLED}};
-
-    ITaskbarList3 * ptbl;
-    HRESULT hr = CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER,
-                                  IID_PPV_ARGS(&ptbl));
-
-    if (SUCCEEDED(hr))
-    {
-        // Declare the image list that contains the button images.
-        // hr = ptbl->ThumbBarSetImageList(hwnd, himl);
-
-        if (SUCCEEDED(hr))
-        {
-            // Attach the toolbar to the thumbnail.
-            hr = ptbl->ThumbBarAddButtons(hwnd, ARRAYSIZE(btn), btn);
-        }
-        ptbl->Release();
-    }
-    return hr;
-}
+//HRESULT AddThumbarButtons(HWND hwnd)
+//{
+//    // Define an array of two buttons. These buttons provide images through an
+//    // image list and also provide tooltips.
+//    THUMBBUTTONMASK dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
+//
+//    /*
+//      THUMBBUTTONMASK dwMask;
+//      UINT iId;
+//      UINT iBitmap;
+//      HICON hIcon;
+//      WCHAR szTip[260];
+//      THUMBBUTTONFLAGS dwFlags;
+//      */
+//
+//    THUMBBUTTON btn[]{
+//        {dwMask, W_KEY_ID_PREV, 0, nullptr, L"Previous song", THBF_ENABLED},
+//        {dwMask, W_KEY_ID_PLAY, 0, nullptr, L"Play/pause", THBF_ENABLED},
+//        {dwMask, W_KEY_ID_NEXT, 0, nullptr, L"Next song", THBF_ENABLED}};
+//
+//    ITaskbarList3 * ptbl;
+//    HRESULT hr = CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER,
+//                                  IID_PPV_ARGS(&ptbl));
+//
+//    if (SUCCEEDED(hr))
+//    {
+//        // Declare the image list that contains the button images.
+//        // hr = ptbl->ThumbBarSetImageList(hwnd, himl);
+//
+//        if (SUCCEEDED(hr))
+//        {
+//            // Attach the toolbar to the thumbnail.
+//            hr = ptbl->ThumbBarAddButtons(hwnd, ARRAYSIZE(btn), btn);
+//        }
+//        ptbl->Release();
+//    }
+//    return hr;
+//}
 
 GdkFilterReturn w32_events_filter_first_everything(GdkXEvent * gdk_xevent,
                                                    GdkEvent * event,
