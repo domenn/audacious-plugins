@@ -73,7 +73,7 @@ EXPORT GlobalHotkeys aud_plugin_instance;
 /* global vars */
 static
 #else
-PluginConfig plugin_cfg;
+PluginConfig plugin_cfg_gtk_global_hk;
 #endif
 
     const char GlobalHotkeys::about[] = N_(
@@ -88,7 +88,7 @@ PluginConfig plugin_cfg;
         " Jonathan A. Davis <davis@jdhouse.org>,\n"
         " Jeremy Tan <nsx@nsx.homeip.net>");
 
-PluginConfig * get_config() { return &plugin_cfg; }
+PluginConfig * get_config() { return &plugin_cfg_gtk_global_hk; }
 
 /*
  * plugin activated
@@ -300,7 +300,7 @@ void load_defaults()
 {
     HotkeyConfiguration * hotkey;
 
-    hotkey = &(plugin_cfg.first);
+    hotkey = &(plugin_cfg_gtk_global_hk.first);
 
     Hotkey::add_hotkey(&hotkey, OS_KEY_AudioPrev, 0, TYPE_KEY,
                        EVENT_PREV_TRACK);
@@ -330,7 +330,7 @@ void load_config()
     HotkeyConfiguration * hotkey;
     int i, max;
 
-    hotkey = &(plugin_cfg.first);
+    hotkey = &(plugin_cfg_gtk_global_hk.first);
     hotkey->next = nullptr;
     hotkey->key = 0;
     hotkey->mask = 0;
@@ -379,7 +379,7 @@ void save_config()
     int max;
     HotkeyConfiguration * hotkey;
 
-    hotkey = &(plugin_cfg.first);
+    hotkey = &(plugin_cfg_gtk_global_hk.first);
     max = 0;
     while (hotkey)
     {
@@ -420,7 +420,7 @@ void GlobalHotkeys::cleanup()
     HotkeyConfiguration * hotkey;
     ungrab_keys();
     release_filter();
-    hotkey = &(plugin_cfg.first);
+    hotkey = &(plugin_cfg_gtk_global_hk.first);
     hotkey = hotkey->next;
     while (hotkey)
     {
@@ -429,8 +429,8 @@ void GlobalHotkeys::cleanup()
         hotkey = hotkey->next;
         g_free(old);
     }
-    plugin_cfg.first.next = nullptr;
-    plugin_cfg.first.key = 0;
-    plugin_cfg.first.event = (EVENT)0;
-    plugin_cfg.first.mask = 0;
+    plugin_cfg_gtk_global_hk.first.next = nullptr;
+    plugin_cfg_gtk_global_hk.first.key = 0;
+    plugin_cfg_gtk_global_hk.first.event = (EVENT)0;
+    plugin_cfg_gtk_global_hk.first.mask = 0;
 }

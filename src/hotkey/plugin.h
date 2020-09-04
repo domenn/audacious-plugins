@@ -107,7 +107,7 @@ PluginConfig * get_config();
 gboolean handle_keyevent(EVENT event);
 #ifdef _WIN32
 void win_init();
-extern PluginConfig plugin_cfg;
+extern PluginConfig plugin_cfg_gtk_global_hk;
 #endif
 
 #endif

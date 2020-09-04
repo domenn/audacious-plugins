@@ -47,13 +47,14 @@ constexpr auto W_KEY_ID_PREV = 18772;
 constexpr auto W_KEY_ID_NEXT = 18773;
 constexpr auto W_FIRST_GLOBAL_KEY_ID = 18774;
 
+bool system_up_and_running{false};
+
 /**
  * Handle to window that has thumbbar buttons associated. Nullptr if it is not
  * on display.
  */
 WindowsWindow message_receiving_window{
     nullptr, {}, {}, AudaciousWindowKind::UNKNOWN};
-bool system_up_and_running{false};
 
 template<typename T>
 std::string VirtualKeyCodeToStringMethod2(T virtualKey)
@@ -110,7 +111,7 @@ void Hotkey::add_hotkey(HotkeyConfiguration ** pphotkey,
 
 void register_global_keys(HWND handle)
 {
-    auto * hotkey = &(plugin_cfg.first);
+    auto * hotkey = &(plugin_cfg_gtk_global_hk.first);
     auto _id = W_FIRST_GLOBAL_KEY_ID;
     while (hotkey)
     {
@@ -272,7 +273,7 @@ GdkFilterReturn w32_evts_filter(GdkXEvent * gdk_xevent, GdkEvent * event,
         if (k_id >= W_FIRST_GLOBAL_KEY_ID && k_id < W_FIRST_GLOBAL_KEY_ID + 20)
         {
             auto idx = k_id - W_FIRST_GLOBAL_KEY_ID;
-            auto * config = &plugin_cfg.first;
+            auto * config = &plugin_cfg_gtk_global_hk.first;
             while (idx--)
             {
                 config = config->next;
@@ -474,7 +475,7 @@ void ungrab_keys()
     AUDDBG("Releasing ...");
     if (message_receiving_window)
     {
-        auto * hotkey = &(plugin_cfg.first);
+        auto * hotkey = &(plugin_cfg_gtk_global_hk.first);
         auto _id = W_FIRST_GLOBAL_KEY_ID;
         while (hotkey)
         {

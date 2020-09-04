@@ -265,7 +265,7 @@ void grab_keys()
 {
     Display * xdisplay;
     int screen;
-    PluginConfig * plugin_cfg = get_config();
+    PluginConfig * plugin_cfg_gtk_global_hk = get_config();
     HotkeyConfiguration * hotkey;
 
     XErrorHandler old_handler = 0;
@@ -278,7 +278,7 @@ void grab_keys()
     old_handler = XSetErrorHandler(x11_error_handler);
 
     get_offending_modifiers(xdisplay);
-    hotkey = &(plugin_cfg->first);
+    hotkey = &(plugin_cfg_gtk_global_hk->first);
     while (hotkey)
     {
         for (screen = 0; screen < ScreenCount(xdisplay); screen++)
@@ -389,7 +389,7 @@ void ungrab_keys()
 {
     Display * xdisplay;
     int screen;
-    PluginConfig * plugin_cfg = get_config();
+    PluginConfig * plugin_cfg_gtk_global_hk = get_config();
     HotkeyConfiguration * hotkey;
 
     XErrorHandler old_handler = 0;
@@ -405,7 +405,7 @@ void ungrab_keys()
 
     get_offending_modifiers(xdisplay);
 
-    hotkey = &(plugin_cfg->first);
+    hotkey = &(plugin_cfg_gtk_global_hk->first);
     while (hotkey)
     {
         for (screen = 0; screen < ScreenCount(xdisplay); screen++)
