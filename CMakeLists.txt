@@ -43,9 +43,9 @@ target_link_libraries(audaciousPlugins Qt5::Core Qt5::Widgets)
 #    )
 
 
-set(hotkeyw32src ./src/hotkey/gui.cc ./src/hotkey/grab.cc  ./src/hotkey/plugin.cc ./src/hotkeyw32/w32_hotkey.cc ./src/hotkey/hotkey_api_common.cc
+set(hotkeyw32src ./src/hotkey/gui.cc ./src/hotkey/grab.cc  ./src/hotkey/plugin.cc ./src/hotkeyw32/w32_hotkey.cc ./src/hotkeyw32/w32_grab.cc ./src/hotkey/hotkey_api_common.cc
     ../audacious-plugins_simpleAF/src/thirdparty/d_custom_logger.cc
-    src/hotkeyw32/windows_window.cc src/hotkeyw32/windows_window.h)
+    )
 
 
 add_library(hotkeyw32 SHARED ${hotkeyw32src})

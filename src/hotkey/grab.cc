@@ -2,8 +2,8 @@
  *  This file is part of audacious-hotkey plugin for audacious
  *
  *  Copyright (c) 2007 - 2008  Sascha Hlusiak <contact@saschahlusiak.de>
- *  Name: grab.cc
- *  Description: grab.cc
+ *  Name: grab.c
+ *  Description: grab.c
  *
  *  Part of this code is from itouch-ctrl plugin.
  *  Authors of itouch-ctrl are listed below:
@@ -57,6 +57,10 @@ static int x11_error_handler(Display * dpy, XErrorEvent * error) { return 0; }
 static GdkFilterReturn gdk_filter(GdkXEvent * xevent, GdkEvent * event,
                                   void * data)
 {
+#ifdef _WIN32
+    AUDDBG("lHotkeyFlow:win CommonGrab: Filter trigger.");
+    assert(false);
+#endif
     HotkeyConfiguration * hotkey;
     hotkey = &(get_config()->first);
     switch (((XEvent *)xevent)->type)
@@ -107,10 +111,11 @@ static GdkFilterReturn gdk_filter(GdkXEvent * xevent, GdkEvent * event,
     return GDK_FILTER_CONTINUE;
 }
 
-#ifndef _WIN32
-
 gboolean setup_filter()
 {
+#ifdef _WIN32
+    AUDDBG("lHotkeyFlow:win CommonGrab: filter up");
+#endif
     gdk_window_add_filter(gdk_screen_get_root_window(gdk_screen_get_default()),
                           gdk_filter, nullptr);
 
@@ -119,11 +124,15 @@ gboolean setup_filter()
 
 void release_filter()
 {
+#ifdef _WIN32
+    AUDDBG("lHotkeyFlow:win CommonGrab: down filter");
+#endif
     gdk_window_remove_filter(
         gdk_screen_get_root_window(gdk_screen_get_default()), gdk_filter,
         nullptr);
 }
 
+#ifndef _WIN32
 /* Taken from xbindkeys */
 static void get_offending_modifiers(Display * dpy)
 {
@@ -265,7 +274,7 @@ void grab_keys()
 {
     Display * xdisplay;
     int screen;
-    PluginConfig * plugin_cfg_gtk_global_hk = get_config();
+    PluginConfig * plugin_cfg = get_config();
     HotkeyConfiguration * hotkey;
 
     XErrorHandler old_handler = 0;
@@ -278,7 +287,7 @@ void grab_keys()
     old_handler = XSetErrorHandler(x11_error_handler);
 
     get_offending_modifiers(xdisplay);
-    hotkey = &(plugin_cfg_gtk_global_hk->first);
+    hotkey = &(plugin_cfg->first);
     while (hotkey)
     {
         for (screen = 0; screen < ScreenCount(xdisplay); screen++)
@@ -389,7 +398,7 @@ void ungrab_keys()
 {
     Display * xdisplay;
     int screen;
-    PluginConfig * plugin_cfg_gtk_global_hk = get_config();
+    PluginConfig * plugin_cfg = get_config();
     HotkeyConfiguration * hotkey;
 
     XErrorHandler old_handler = 0;
@@ -405,7 +414,7 @@ void ungrab_keys()
 
     get_offending_modifiers(xdisplay);
 
-    hotkey = &(plugin_cfg_gtk_global_hk->first);
+    hotkey = &(plugin_cfg->first);
     while (hotkey)
     {
         for (screen = 0; screen < ScreenCount(xdisplay); screen++)

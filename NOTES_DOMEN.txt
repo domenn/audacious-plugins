@@ -8,9 +8,3 @@ Also, wclion/master has some useful parts. Makefile hide annoying warnings, conf
 
 c6df5e92ffcfc342b93973917d3e352890d112f3 (wclion/master) starts with thumbbar.
 I will do globals first and perfect it. Then merge. Then thumbbar.
-
-HWND winapi_method_get_app_main_window() doesn't do any check if I have correct window (for example: tray or settings or main audacious ... it may be wrong).
-One idea is to hook WM_DESTROY and recreate all the stuff when all has been taken care of.
-
-GdkWindow* gdkwin_gtk_method = gdk_screen_get_active_window(gdk_screen_get_default());
- ( or get_root_window ) doesn't work at all. Hard to say why. There is no point trying it in future.

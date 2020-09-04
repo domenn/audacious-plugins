@@ -2,8 +2,8 @@
  *  This file is part of audacious-hotkey plugin for audacious
  *
  *  Copyright (c) 2007 - 2008  Sascha Hlusiak <contact@saschahlusiak.de>
- *  Name: plugin.cc
- *  Description: plugin.cc
+ *  Name: plugin.c
+ *  Description: plugin.c
  *
  *  Part of this code is from itouch-ctrl plugin.
  *  Authors of itouch-ctrl are listed below:
@@ -46,12 +46,11 @@
 #include "api_hotkey.h"
 #include "grab.h"
 #include "gui.h"
+#include "plugin.h"
 
 #ifdef BUILT_FROM_CMAKE
 #include "../../audacious-plugins_simpleAF/src/thirdparty/d_custom_logger.hpp"
 #endif
-
-extern bool system_up_and_running;
 
 class GlobalHotkeys : public GeneralPlugin
 {
@@ -73,7 +72,7 @@ EXPORT GlobalHotkeys aud_plugin_instance;
 /* global vars */
 static
 #else
-PluginConfig plugin_cfg_gtk_global_hk;
+PluginConfig plugin_cfg;
 #endif
 
     const char GlobalHotkeys::about[] = N_(
@@ -82,14 +81,13 @@ PluginConfig plugin_cfg_gtk_global_hk;
         "keys.\n\n"
         "Copyright (C) 2007-2008 Sascha Hlusiak <contact@saschahlusiak.de>\n\n"
         "Contributors include:\n"
-        "Copyright (C) 2020 Domen Mori <domen.mory@gmail.com>\n"
         "Copyright (C) 2006-2007 Vladimir Paskov <vlado.paskov@gmail.com>\n"
         "Copyright (C) 2000-2002 Ville Syrjälä <syrjala@sci.fi>,\n"
         " Bryn Davies <curious@ihug.com.au>,\n"
         " Jonathan A. Davis <davis@jdhouse.org>,\n"
         " Jeremy Tan <nsx@nsx.homeip.net>");
 
-PluginConfig * get_config() { return &plugin_cfg_gtk_global_hk; }
+PluginConfig * get_config() { return &plugin_cfg; }
 
 /*
  * plugin activated
@@ -106,9 +104,8 @@ bool GlobalHotkeys::init()
     }
 #ifdef _WIN32
     win_init();
-#else
-    setup_filter();
 #endif
+    setup_filter();
     load_config();
     grab_keys();
     return true;
@@ -299,9 +296,10 @@ gboolean handle_keyevent(EVENT event)
 
 void load_defaults()
 {
+    AUDDBG("lHotkeyFlow:Entry, loading defaults.");
     HotkeyConfiguration * hotkey;
 
-    hotkey = &(plugin_cfg_gtk_global_hk.first);
+    hotkey = &(plugin_cfg.first);
 
     Hotkey::add_hotkey(&hotkey, OS_KEY_AudioPrev, 0, TYPE_KEY,
                        EVENT_PREV_TRACK);
@@ -331,7 +329,7 @@ void load_config()
     HotkeyConfiguration * hotkey;
     int i, max;
 
-    hotkey = &(plugin_cfg_gtk_global_hk.first);
+    hotkey = &(plugin_cfg.first);
     hotkey->next = nullptr;
     hotkey->key = 0;
     hotkey->mask = 0;
@@ -380,7 +378,7 @@ void save_config()
     int max;
     HotkeyConfiguration * hotkey;
 
-    hotkey = &(plugin_cfg_gtk_global_hk.first);
+    hotkey = &(plugin_cfg.first);
     max = 0;
     while (hotkey)
     {
@@ -413,15 +411,14 @@ void save_config()
 
 void GlobalHotkeys::cleanup()
 {
-    system_up_and_running = false;
 #ifdef BUILT_FROM_CMAKE
-    AUDWARN("Cleanup of globalHotkeys");
     audlog::unsubscribe(&DCustomLogger::go);
 #endif
+
     HotkeyConfiguration * hotkey;
     ungrab_keys();
     release_filter();
-    hotkey = &(plugin_cfg_gtk_global_hk.first);
+    hotkey = &(plugin_cfg.first);
     hotkey = hotkey->next;
     while (hotkey)
     {
@@ -430,8 +427,8 @@ void GlobalHotkeys::cleanup()
         hotkey = hotkey->next;
         g_free(old);
     }
-    plugin_cfg_gtk_global_hk.first.next = nullptr;
-    plugin_cfg_gtk_global_hk.first.key = 0;
-    plugin_cfg_gtk_global_hk.first.event = (EVENT)0;
-    plugin_cfg_gtk_global_hk.first.mask = 0;
+    plugin_cfg.first.next = nullptr;
+    plugin_cfg.first.key = 0;
+    plugin_cfg.first.event = (EVENT)0;
+    plugin_cfg.first.mask = 0;
 }
