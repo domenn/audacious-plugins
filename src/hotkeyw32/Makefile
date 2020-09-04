@@ -1,6 +1,6 @@
 PLUGIN = hotkeyw32${PLUGIN_SUFFIX}
 
-SRCS = ../hotkey/gui.cc ../hotkey/grab.cc ../hotkey/plugin.cc w32_hotkey.cc ../hotkey/hotkey_api_common.cc windows_window.cc
+SRCS = ../hotkey/gui.cc ../hotkey/grab.cc ../hotkey/plugin.cc w32_hotkey.cc ../hotkey/hotkey_api_common.cc
 
 include ../../buildsys.mk
 include ../../extra.mk
